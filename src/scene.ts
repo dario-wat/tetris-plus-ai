@@ -1,19 +1,21 @@
 import * as Phaser from 'phaser';
-import ballImage from '../assets/ball.png'
+import { O } from './tetrominoes/Tetromino';
+import { preloadTextures } from './textures';
 
-export class MyScene extends Phaser.Scene {
+export class TetrisScene extends Phaser.Scene {
 
   constructor() {
     super({ key: 'MyScene' })
   }
 
   preload(): void {
-    this.load.image('ball', ballImage);
+    preloadTextures(this);
   }
 
   create(): void {
     // Create the ball sprite at the center of the screen
-    const ball = this.physics.add.sprite(400, 300, 'ball');
+    // const ball = this.physics.add.sprite(400, 300, 'o');
+    const ball = new O(this, 400, 300)
     ball.setCollideWorldBounds(true);
     ball.setBounce(1);
 

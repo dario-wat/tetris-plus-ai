@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { MyScene } from './scene';
+import { TetrisScene } from './scene';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -8,11 +8,11 @@ const config: Phaser.Types.Core.GameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 1000 },
+      // gravity: { y: 1000 },
       debug: false,
     }
   },
-  scene: new MyScene(),
+  scene: new TetrisScene(),
 };
 
 let game = new Phaser.Game(config);
