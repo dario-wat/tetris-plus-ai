@@ -1,11 +1,12 @@
 import * as Phaser from 'phaser';
+import TetrisArena from './TetrisArena';
 import { O } from './tetrominoes/Tetromino';
 import { preloadTextures } from './textures';
 
 export class TetrisScene extends Phaser.Scene {
 
   constructor() {
-    super({ key: 'MyScene' })
+    super({ key: 'TetrisScene' })
   }
 
   preload(): void {
@@ -15,6 +16,8 @@ export class TetrisScene extends Phaser.Scene {
   create(): void {
     // Create the ball sprite at the center of the screen
     // const ball = this.physics.add.sprite(400, 300, 'o');
+    const g = this.add.group();
+    const arena = new TetrisArena(this);
     const ball = new O(this, 400, 300)
     ball.setCollideWorldBounds(true);
     ball.setBounce(1);
