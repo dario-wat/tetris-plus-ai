@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
-import { DynamicSprite } from '../sprite';
-import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../textures';
+import { DynamicSprite } from '../lib/sprite';
+import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
 
 export abstract class Tetromino extends DynamicSprite {
 

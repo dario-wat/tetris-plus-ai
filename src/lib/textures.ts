@@ -1,12 +1,12 @@
 import * as Phaser from 'phaser';
-import iImage from '../assets/I.png'
-import jImage from '../assets/J.png'
-import lImage from '../assets/L.png'
-import oImage from '../assets/O.png'
-import sImage from '../assets/S.png'
-import tImage from '../assets/T.png'
-import zImage from '../assets/Z.png'
-import borderImage from '../assets/Border.png';
+import iImage from '../../assets/I.png'
+import jImage from '../../assets/J.png'
+import lImage from '../../assets/L.png'
+import oImage from '../../assets/O.png'
+import sImage from '../../assets/S.png'
+import tImage from '../../assets/T.png'
+import zImage from '../../assets/Z.png'
+import borderImage from '../../assets/Border.png';
 
 export const I_TEXTURE = 'i';
 export const J_TEXTURE = 'j';

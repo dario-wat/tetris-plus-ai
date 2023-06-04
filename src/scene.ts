@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
-import TetrisArena from './TetrisArena';
-import { O } from './tetrominoes/Tetromino';
-import { preloadTextures } from './textures';
+import TetrisArena from './game_objects/TetrisArena';
+import { O } from './game_objects/Tetromino';
+import { preloadTextures } from './lib/textures';
 
 export class TetrisScene extends Phaser.Scene {
 

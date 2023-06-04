@@ -1,8 +1,8 @@
-import { CELL_SIZE, TETRIS_HEIGHT, TETRIS_WIDTH } from "./consts";
-import { ox, oy } from "./grid";
-import { TetrisScene } from "./scene";
-import { StaticTileSprite } from "./sprite";
-import { BORDER } from "./textures";
+import { CELL_SIZE, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { ox, oy } from "../lib/grid";
+import { TetrisScene } from "../scene";
+import { StaticTileSprite } from "../lib/sprite";
+import { BORDER } from "../lib/textures";
 
 const IMAGE_SIZE = 64; // Hardcoded (image size)
 const SIZE = CELL_SIZE;
