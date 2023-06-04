@@ -19,12 +19,6 @@ export class TetrisScene extends Phaser.Scene {
     const g = this.add.group();
     const arena = new TetrisArena(this);
     const ball = new O(this, 400, 300)
-    ball.setCollideWorldBounds(true);
-    ball.setBounce(1);
-
-    // Set initial velocity for the ball
-    ball.setVelocity(200, 200);
-    ball.setGravityY(300);
   }
 
 

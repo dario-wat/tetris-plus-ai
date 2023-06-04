@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
-import { DynamicSprite } from '../lib/sprite';
+import { DynamicSprite, StaticSprite } from '../lib/sprite';
 import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
+import { SCALE } from '../lib/consts';
 
-export abstract class Tetromino extends DynamicSprite {
+export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   constructor(
     scene: TetrisScene,
@@ -14,7 +15,8 @@ export abstract class Tetromino extends DynamicSprite {
     super(scene, x, y, texture);
     // TODO this shouldnt have physics
     scene.add.existing(this);
-    scene.physics.add.existing(this);
+
+    this.setScale(SCALE);
   }
 }
 
