@@ -1,7 +1,6 @@
 import { CELL_SIZE, SCALE, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { ox, oy } from "../lib/grid";
 import { TetrisScene } from "../scene";
-import { StaticTileSprite } from "../lib/sprite";
 import { BORDER } from "../lib/textures";
 
 export default class TetrisArena {

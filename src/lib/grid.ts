@@ -5,7 +5,7 @@ import { CELL_SIZE, X_ORIGIN, Y_ORIGIN } from "./consts";
   functions to convert between cell coordinates and pixel coordinates.
   
   ox and oy convert the grid coordinates into top left pixel coordinates.
-  cx and cy convert the grid coordiantes into center pixel coordinates.
+  cx and cy convert the grid coordinates into center pixel coordinates.
   
   cx and cy additionally take a size parameter, which is the number of
   cells the object spans. This is used to calculate the center of the
