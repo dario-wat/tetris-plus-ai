@@ -1,9 +1,8 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
-import { DynamicSprite, StaticSprite } from '../lib/sprite';
 import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
 import { SCALE, TETRIS_HEIGHT, TETRIS_WIDTH } from '../lib/consts';
-import { cx, cy, ox, oy } from '../lib/grid';
+import { cx, cy } from '../lib/grid';
 
 type RotationSize = [number, number]
 type Coord = [number, number];
@@ -12,9 +11,6 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   public xCoord: number;
   public yCoord: number;
-
-  protected tetrWidth: number;
-  protected tetrHeight: number;
 
   protected abstract readonly rotations: RotationSize[];
   protected abstract readonly rotationCoords: Coord[][];
@@ -35,21 +31,13 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     this.setScale(SCALE);
 
     this.scene.events.on('update', () => {
-      this.updateRotationSize();
-      this.updatePosition();
+      const tetrWidth = this.rotations[this.currRotation][0];
+      const tetrHeight = this.rotations[this.currRotation][1];
+      this.setPosition(
+        cx(this.xCoord, tetrWidth),
+        cy(this.yCoord, tetrHeight),
+      );
     });
-  }
-
-  private updatePosition(): void {
-    this.setPosition(
-      cx(this.xCoord, this.tetrWidth),
-      cy(this.yCoord, this.tetrHeight),
-    );
-  }
-
-  private updateRotationSize(): void {
-    this.tetrWidth = this.rotations[this.currRotation][0];
-    this.tetrHeight = this.rotations[this.currRotation][1];
   }
 
   public drop(): void {
