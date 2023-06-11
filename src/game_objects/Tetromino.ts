@@ -24,7 +24,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   protected abstract readonly rotationCoords: Coord[][];
   /** Coordinate offset for the center of the tetromino. */
   protected abstract readonly rotationCenterOffset: Coord[];
-  protected currRotation: number = 0; // TODO every tetromino should have its own
+  protected currRotation: number = 0;
 
   constructor(scene: TetrisScene, texture: string) {
     super(scene, 0, 0, texture);
@@ -73,6 +73,16 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     this.yCoord += this.rotationCenterOffset[this.currRotation][1];
   }
 
+  /** 
+   * This is used only for debugging. It is the same as unlock because all
+   * tetrominoes are locked t center by default.
+   */
+  public getCenterPoint(): Coord {
+    const dx = this.rotationCenterOffset[this.currRotation][0];
+    const dy = this.rotationCenterOffset[this.currRotation][1];
+    return [this.xCoord + dx, this.yCoord + dy];
+  }
+
   public moveRight(): void {
     this.xCoord += 1;
     if (!this.isValidPosition()) {
@@ -85,14 +95,6 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     if (!this.isValidPosition()) {
       this.xCoord += 1;
     }
-  }
-
-  // TODO only for debugging? this is same to unlock because the tetrominoes
-  // are always locked to center unless during the rotation period
-  public getCenterPoint(): Coord {
-    const dx = this.rotationCenterOffset[this.currRotation][0];
-    const dy = this.rotationCenterOffset[this.currRotation][1];
-    return [this.xCoord + dx, this.yCoord + dy];
   }
 
   /** Gets coordinates of all individual blocks of a tetromino. */
@@ -127,8 +129,9 @@ export class I extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, I_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 3;
+    this.xCoord = 4;
+    this.yCoord = 0;
+    this.rotate();
   }
 }
 
@@ -145,7 +148,7 @@ export class J extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, J_TEXTURE);
-    this.xCoord = 0;
+    this.xCoord = 3;
     this.yCoord = 0;
   }
 }
@@ -163,7 +166,7 @@ export class L extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, L_TEXTURE);
-    this.xCoord = 0;
+    this.xCoord = 3;
     this.yCoord = 0;
   }
 }
@@ -178,7 +181,7 @@ export class O extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, O_TEXTURE);
-    this.xCoord = 0;
+    this.xCoord = 4;
     this.yCoord = 0;
   }
 }
@@ -194,8 +197,8 @@ export class S extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, S_TEXTURE);
-    this.xCoord = 4;
-    this.yCoord = 4;
+    this.xCoord = 3;
+    this.yCoord = 0;
   }
 }
 
@@ -228,7 +231,7 @@ export class Z extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, Z_TEXTURE);
-    this.xCoord = 0;
+    this.xCoord = 3;
     this.yCoord = 0;
   }
 }
