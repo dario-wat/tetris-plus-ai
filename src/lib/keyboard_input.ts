@@ -8,11 +8,15 @@ export default class KeyboardInput {
   public e: Phaser.Input.Keyboard.Key;
   public s: Phaser.Input.Keyboard.Key;
 
+  public space: Phaser.Input.Keyboard.Key;
+
   constructor(scene: Phaser.Scene) {
     this.a = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.d = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.w = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.e = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     this.s = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+
+    this.space = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
 }

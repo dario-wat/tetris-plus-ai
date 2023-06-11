@@ -97,13 +97,19 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     }
   }
 
-  public drop(): void {
+  /** Drops the tetromino by one and return true if it got dropped. */
+  public drop(): boolean {
     if (this.isAtBottom()) {
       this.scene.blockHandler.destructureTetromino(this);
       this.destroy();
-      return;
+      return false;
     }
     this.yCoord += 1;
+    return true;
+  }
+
+  public totalDrop(): void {
+    while (this.drop()) { }
   }
 
   /** 

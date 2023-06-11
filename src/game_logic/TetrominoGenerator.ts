@@ -1,3 +1,4 @@
+import { shuffle } from "lodash";
 import { I, J, L, O, S, T, Tetromino, Z } from "../game_objects/Tetromino";
 import { TetrisScene } from "../scene";
 
@@ -37,14 +38,11 @@ export default class TetrominoGenerator {
   }
 }
 
+/** 
+ * Creates shuffled indices for 7 unique tetrominoes. 
+ * TODO this is hardcoded and if I need to add new unique tetrominoes
+ *   this will need to be updated.
+ */
 function newShuffledQueue(): number[] {
-  return shuffleArray([0, 1, 2, 3, 4, 5, 6]);
-}
-
-function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+  return shuffle([0, 1, 2, 3, 4, 5, 6]);
 }

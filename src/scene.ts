@@ -7,6 +7,9 @@ import TetrominoGenerator from './game_logic/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
 import BlockHandler from './game_logic/BlockHandler';
 
+// TODO show where the tetromino will drop
+// TODO show next tetromino
+
 export class TetrisScene extends Phaser.Scene {
 
   private keys: KeyboardInput;
@@ -48,6 +51,9 @@ export class TetrisScene extends Phaser.Scene {
     this.keys.s.on('down', () => {
       this.tetromino.drop();
     });
+    this.keys.space.on('down', () => {
+      this.tetromino.totalDrop();
+    });
   }
 
 
@@ -63,6 +69,7 @@ export class TetrisScene extends Phaser.Scene {
     if (this.c >= 40) {
       this.tetromino.drop();
       this.blockHandler.crush();  // TODO do this better with repeating function
+      // TODO better crushing logic, more seamless
       this.c = 0;
     }
     // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
