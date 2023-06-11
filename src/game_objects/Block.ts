@@ -7,8 +7,8 @@ export default class Block extends Phaser.GameObjects.Sprite {
 
   constructor(
     scene: TetrisScene,
-    xCoord: number,
-    yCoord: number,
+    public xCoord: number,
+    public yCoord: number,
     texture: string,
   ) {
     super(scene, cx(xCoord), cy(yCoord), texture);

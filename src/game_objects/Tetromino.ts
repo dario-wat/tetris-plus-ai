@@ -98,10 +98,10 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   public drop(): void {
-    if (this.isAtBottom()) {  // TODO or touch the bottom of single blocks
+    if (this.isAtBottom()) {
       const coords = this.getAllCoords();
       for (const [xCoord, yCoord] of coords) {
-        new Block(this.scene, xCoord, yCoord, this.blockTexture);
+        this.scene.blockHandler.create(xCoord, yCoord, this.blockTexture);
       }
       this.destroy();
       return;
@@ -109,10 +109,14 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     this.yCoord += 1;
   }
 
-  /** Checks whether the tetromino is touching the bottom of the arena. */
+  /** 
+   * Checks whether the tetromino is touching the bottom of the arena
+   * or the top of the tetromino tower.
+   */
   private isAtBottom(): boolean {
     const coords = this.getAllCoords();
-    return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1);
+    return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1)
+      || this.scene.blockHandler.isTetrominoAtTheBottom(this);
   }
 
   /** Gets coordinates of all individual blocks of a tetromino. */
@@ -126,7 +130,8 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   /** Checks whether a tetromino is in a valid position (inside the arena). */
   private isValidPosition(): boolean {
     const allCoords = this.getAllCoords();
-    return allCoords.every(([xCoord, yCoord]) => inBounds(xCoord, yCoord));
+    return allCoords.every(([xCoord, yCoord]) => inBounds(xCoord, yCoord))
+      && !this.scene.blockHandler.isOverlapping(this);
   }
 }
 
