@@ -32,7 +32,7 @@ export class TetrisScene extends Phaser.Scene {
     // const ball = this.physics.add.sprite(400, 300, 'o');
     const g = this.add.group();
     const arena = new TetrisArena(this);
-    this.tetr = new T(this, 100, 100)
+    this.tetr = new I(this)
 
 
 
@@ -54,10 +54,11 @@ export class TetrisScene extends Phaser.Scene {
     this.c++;
     // Empty for now
     if (this.c >= 40) {
-      this.tetr.drop();
+      // this.tetr.drop();
       this.c = 0;
     }
     // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
+    debugPoint(this.debugGraphics, this.tetr.getCenterPoint());
 
     // this.tetr.update
   }

@@ -7,26 +7,28 @@ import { cx, cy } from '../lib/grid';
 type RotationSize = [number, number]
 type Coord = [number, number];
 
+/**
+ * Abstract class for a tetromino containing most of the movement logic.
+ * Most of the rotation logic complexity stems directly from us rendering
+ * the tetromino sprites starting from the top left corner and then having
+ * to rotate around the center.
+ */
 export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   public xCoord: number;
   public yCoord: number;
 
+  /** Width and height for each individual rotation */
   protected abstract readonly rotations: RotationSize[];
+  /** Coordinate offsets for each individual block in a tetromino. */
   protected abstract readonly rotationCoords: Coord[][];
-  protected currRotation: number = 0;
+  /** Coordinate offset for the center of the tetromino. */
+  protected abstract readonly rotationCenterOffset: Coord[];
+  protected currRotation: number = 0; // TODO every tetromino should have its own
 
-  constructor(
-    scene: TetrisScene,
-    x: number,
-    y: number,
-    texture: string,
-  ) {
-    super(scene, x, y, texture);
+  constructor(scene: TetrisScene, texture: string) {
+    super(scene, 0, 0, texture);
     scene.add.existing(this);
-
-    this.xCoord = 0;
-    this.yCoord = 0;
 
     this.setScale(SCALE);
 
@@ -45,8 +47,30 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   public rotate(): void {
+    this.unlockFromCenter();
     this.currRotation = (this.currRotation + 1) % this.rotations.length;
+    this.lockToCenter();
     this.setRotation(this.rotation + Math.PI / 2);
+  }
+
+  /**
+   * Tetrominoes are not properly centered by default. This will translate
+   * the tetromino so that it's centered. NOTE: tetrominoes need to be
+   * uncentered before any other rotations.
+   */
+  private lockToCenter(): void {
+    this.xCoord -= this.rotationCenterOffset[this.currRotation][0];
+    this.yCoord -= this.rotationCenterOffset[this.currRotation][1];
+  }
+
+  /**
+   * It will reset the tetromino into its default position where coordinates
+   * are set to the top left corner instead of the center. This needs to be
+   * called before a new rotation is done.
+   */
+  private unlockFromCenter(): void {
+    this.xCoord += this.rotationCenterOffset[this.currRotation][0];
+    this.yCoord += this.rotationCenterOffset[this.currRotation][1];
   }
 
   public moveRight(): void {
@@ -63,7 +87,16 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     }
   }
 
-  private getAllCoords(): Coord[] {
+  // TODO only for debugging? this is same to unlock because the tetrominoes
+  // are always locked to center unless during the rotation period
+  public getCenterPoint(): Coord {
+    const dx = this.rotationCenterOffset[this.currRotation][0];
+    const dy = this.rotationCenterOffset[this.currRotation][1];
+    return [this.xCoord + dx, this.yCoord + dy];
+  }
+
+  /** Gets coordinates of all individual blocks of a tetromino. */
+  public getAllCoords(): Coord[] {
     const currRotationCoords = this.rotationCoords[this.currRotation];
     return currRotationCoords.map(([dx, dy]) =>
       [this.xCoord + dx, this.yCoord + dy]
@@ -90,9 +123,12 @@ export class I extends Tetromino {
     [[0, 0], [0, 1], [0, 2], [0, 3]],
     [[0, 0], [1, 0], [2, 0], [3, 0]],
   ];
+  protected rotationCenterOffset: Coord[] = [[0, 0], [1, 0]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, I_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, I_TEXTURE);
+    this.xCoord = 3;
+    this.yCoord = 3;
   }
 }
 
@@ -105,9 +141,12 @@ export class J extends Tetromino {
     [[0, 0], [1, 0], [2, 0], [2, 1]],
     [[1, 0], [0, 2], [1, 1], [1, 2]],
   ];
+  protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, J_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, J_TEXTURE);
+    this.xCoord = 0;
+    this.yCoord = 0;
   }
 }
 
@@ -120,9 +159,12 @@ export class L extends Tetromino {
     [[0, 0], [1, 0], [2, 0], [0, 1]],
     [[1, 0], [0, 0], [1, 1], [1, 2]],
   ];
+  protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, L_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, L_TEXTURE);
+    this.xCoord = 0;
+    this.yCoord = 0;
   }
 }
 
@@ -132,9 +174,12 @@ export class O extends Tetromino {
   protected rotationCoords: Coord[][] = [
     [[0, 0], [1, 0], [0, 1], [1, 1]],
   ];
+  protected rotationCenterOffset: Coord[] = [[0, 0]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, O_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, O_TEXTURE);
+    this.xCoord = 0;
+    this.yCoord = 0;
   }
 }
 
@@ -145,9 +190,12 @@ export class S extends Tetromino {
     [[1, 0], [2, 0], [0, 1], [1, 1]],
     [[0, 0], [0, 1], [1, 1], [1, 2]],
   ];
+  protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, S_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, S_TEXTURE);
+    this.xCoord = 4;
+    this.yCoord = 4;
   }
 }
 
@@ -160,9 +208,12 @@ export class T extends Tetromino {
     [[0, 0], [1, 0], [2, 0], [1, 1]],
     [[1, 0], [0, 1], [1, 1], [1, 2]],
   ];
+  protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, T_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, T_TEXTURE);
+    this.xCoord = 4;
+    this.yCoord = 4;
   }
 }
 
@@ -173,8 +224,11 @@ export class Z extends Tetromino {
     [[0, 0], [1, 0], [2, 1], [1, 1]],
     [[1, 0], [0, 1], [1, 1], [0, 2]],
   ];
+  protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  constructor(scene: TetrisScene, x: number, y: number) {
-    super(scene, x, y, Z_TEXTURE);
+  constructor(scene: TetrisScene) {
+    super(scene, Z_TEXTURE);
+    this.xCoord = 0;
+    this.yCoord = 0;
   }
 }
