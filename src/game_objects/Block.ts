@@ -15,5 +15,9 @@ export default class Block extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
 
     this.setScale(SCALE);
+
+    this.scene.events.on('update', () => {
+      this.setPosition(cx(this.xCoord), cy(this.yCoord));
+    });
   }
 }

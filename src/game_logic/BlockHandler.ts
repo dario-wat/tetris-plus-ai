@@ -1,15 +1,60 @@
+import { flatten, groupBy, range, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
+import { TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 
+const X_INDICES_STR = JSON.stringify(range(0, TETRIS_WIDTH));
+
+/**
+ * Represents an individual immovable block that is created once the
+ * tetromino hits the bottom.
+ */
 export default class BlockHandler {
 
   private blocks: Block[] = [];
 
   constructor(public scene: TetrisScene) { }
 
-  public create(xCoord: number, yCoord: number, texture: string): void {
-    this.blocks.push(new Block(this.scene, xCoord, yCoord, texture));
+  /** Converts a Tetromino into immovable individual blocks. */
+  public destructureTetromino(tetromino: Tetromino): void {
+    const coords = tetromino.getAllCoords();
+    for (const [xCoord, yCoord] of coords) {
+      this.blocks.push(
+        new Block(this.scene, xCoord, yCoord, tetromino.blockTexture)
+      );
+    }
+  }
+
+  /**
+   * Crushes all rows that are full. Does it by finding rows where blocks
+   * cover all X indices, removing them from the list and destroying the
+   * sprites, and drop all blocks above the rows by 1.
+   */
+  public crush(): void {
+    const rows = Object.values(groupBy(this.blocks, block => block.yCoord));
+    const rowsToCrush = rows.filter(row =>
+      // Blocks cover all X indices (entire row)
+      JSON.stringify(row.map(block => block.xCoord).sort()) === X_INDICES_STR
+    );
+    const rowIndicesToCrush = uniq(
+      flatten(rowsToCrush).map(block => block.yCoord)
+    );
+
+    for (const indexToCrush of rowIndicesToCrush.sort()) {
+      // Destroy Blocks that should be crushed
+      this.blocks.filter(block => block.yCoord === indexToCrush)
+        .forEach(block => block.destroy());
+
+      // Remove Blocks that should be crushed
+      this.blocks = this.blocks.filter(block => block.yCoord !== indexToCrush);
+
+      // Drop blocks that are above the crushed row
+      this.blocks.filter(block => block.yCoord < indexToCrush)
+        .forEach(block => {
+          block.yCoord += 1;
+        });
+    }
   }
 
   public isTetrominoAtTheBottom(tetromino: Tetromino): boolean {

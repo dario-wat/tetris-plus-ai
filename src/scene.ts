@@ -62,6 +62,7 @@ export class TetrisScene extends Phaser.Scene {
     // Empty for now
     if (this.c >= 40) {
       this.tetromino.drop();
+      this.blockHandler.crush();  // TODO do this better with repeating function
       this.c = 0;
     }
     // debugPoints(this.debugGraphics, this.tetr.getAllCoords());

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/dario-wat/happy-platformer#readme",
   "devDependencies": {
+    "@types/lodash": "^4.14.195",
     "css-loader": "^6.7.2",
     "file-loader": "^6.2.0",
     "gh-pages": "^4.0.0",
@@ -31,6 +32,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "phaser": "^3.55.2"
   }
 }

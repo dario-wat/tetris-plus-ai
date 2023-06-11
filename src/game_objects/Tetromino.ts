@@ -27,7 +27,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   protected abstract readonly rotationCenterOffset: Coord[];
   protected currRotation: number = 0;
 
-  protected abstract readonly blockTexture: string;
+  public abstract readonly blockTexture: string;
 
   constructor(public scene: TetrisScene, texture: string) {
     // TODO(fix 0 0 here)
@@ -99,10 +99,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   public drop(): void {
     if (this.isAtBottom()) {
-      const coords = this.getAllCoords();
-      for (const [xCoord, yCoord] of coords) {
-        this.scene.blockHandler.create(xCoord, yCoord, this.blockTexture);
-      }
+      this.scene.blockHandler.destructureTetromino(this);
       this.destroy();
       return;
     }
@@ -151,7 +148,7 @@ export class I extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0], [1, 0]];
 
-  protected readonly blockTexture: string = LIGHT_BLUE;
+  public readonly blockTexture: string = LIGHT_BLUE;
 
   constructor(scene: TetrisScene) {
     super(scene, I_TEXTURE);
@@ -172,7 +169,7 @@ export class J extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  protected readonly blockTexture: string = BLUE;
+  public readonly blockTexture: string = BLUE;
 
   constructor(scene: TetrisScene) {
     super(scene, J_TEXTURE);
@@ -192,7 +189,7 @@ export class L extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  protected readonly blockTexture: string = ORANGE;
+  public readonly blockTexture: string = ORANGE;
 
   constructor(scene: TetrisScene) {
     super(scene, L_TEXTURE);
@@ -209,7 +206,7 @@ export class O extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0]];
 
-  protected readonly blockTexture: string = YELLOW;
+  public readonly blockTexture: string = YELLOW;
 
   constructor(scene: TetrisScene) {
     super(scene, O_TEXTURE);
@@ -227,7 +224,7 @@ export class S extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  protected readonly blockTexture: string = GREEN;
+  public readonly blockTexture: string = GREEN;
 
   constructor(scene: TetrisScene) {
     super(scene, S_TEXTURE);
@@ -247,7 +244,7 @@ export class T extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  protected readonly blockTexture: string = PURPLE;
+  public readonly blockTexture: string = PURPLE;
 
   constructor(scene: TetrisScene) {
     super(scene, T_TEXTURE);
@@ -265,7 +262,7 @@ export class Z extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  protected readonly blockTexture: string = RED;
+  public readonly blockTexture: string = RED;
 
   constructor(scene: TetrisScene) {
     super(scene, Z_TEXTURE);
