@@ -3,6 +3,7 @@ import TetrisArena from './game_objects/TetrisArena';
 import { I, J, L, O, S, T, Tetromino, Z } from './game_objects/Tetromino';
 import { debugPoint, debugPoints } from './lib/debug';
 import KeyboardInput from './lib/keyboard_input';
+import TetrominoGenerator from './lib/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
 
 export class TetrisScene extends Phaser.Scene {
@@ -10,7 +11,9 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
   private debugGraphics: Phaser.GameObjects.Graphics;
 
-  private tetr: Tetromino;
+  private tetrominoGenerator: TetrominoGenerator;
+
+  private tetromino: Tetromino;
   private c: number = 0;
 
   constructor() {
@@ -26,39 +29,43 @@ export class TetrisScene extends Phaser.Scene {
     this.debugGraphics = this.add.graphics();
     this.debugGraphics.depth = 1;
 
-
-    // debugPoint(this, 1, 1);
-    // Create the ball sprite at the center of the screen
-    // const ball = this.physics.add.sprite(400, 300, 'o');
-    const g = this.add.group();
-    const arena = new TetrisArena(this);
-    this.tetr = new I(this)
+    new TetrisArena(this);
+    this.tetrominoGenerator = new TetrominoGenerator(this);
+    this.tetromino = this.tetrominoGenerator.create();
 
 
 
     this.keys.e.on('down', () => {
-      this.tetr.rotate();
+      this.tetromino.rotate();
     });
 
     this.keys.d.on('down', () => {
-      this.tetr.moveRight();
+      this.tetromino.moveRight();
     });
     this.keys.a.on('down', () => {
-      this.tetr.moveLeft();
+      this.tetromino.moveLeft();
+    });
+    this.keys.s.on('down', () => {
+      this.tetromino.drop();
     });
   }
 
 
   update(): void {
     this.debugGraphics.clear();
+    if (!this.tetromino.scene) {
+      this.tetromino = this.tetrominoGenerator.create();
+    }
+
+
     this.c++;
     // Empty for now
     if (this.c >= 40) {
-      // this.tetr.drop();
+      this.tetromino.drop();
       this.c = 0;
     }
     // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
-    debugPoint(this.debugGraphics, this.tetr.getCenterPoint());
+    debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
 
     // this.tetr.update
   }

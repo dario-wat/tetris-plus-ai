@@ -1,8 +1,9 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
-import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
+import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
 import { SCALE, TETRIS_HEIGHT, TETRIS_WIDTH } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
+import Block from './Block';
 
 type RotationSize = [number, number]
 type Coord = [number, number];
@@ -26,7 +27,10 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   protected abstract readonly rotationCenterOffset: Coord[];
   protected currRotation: number = 0;
 
-  constructor(scene: TetrisScene, texture: string) {
+  protected abstract readonly blockTexture: string;
+
+  constructor(public scene: TetrisScene, texture: string) {
+    // TODO(fix 0 0 here)
     super(scene, 0, 0, texture);
     scene.add.existing(this);
 
@@ -40,10 +44,6 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
         cy(this.yCoord, tetrHeight),
       );
     });
-  }
-
-  public drop(): void {
-    this.yCoord += 1;
   }
 
   public rotate(): void {
@@ -97,6 +97,24 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     }
   }
 
+  public drop(): void {
+    if (this.isAtBottom()) {  // TODO or touch the bottom of single blocks
+      const coords = this.getAllCoords();
+      for (const [xCoord, yCoord] of coords) {
+        new Block(this.scene, xCoord, yCoord, this.blockTexture);
+      }
+      this.destroy();
+      return;
+    }
+    this.yCoord += 1;
+  }
+
+  /** Checks whether the tetromino is touching the bottom of the arena. */
+  private isAtBottom(): boolean {
+    const coords = this.getAllCoords();
+    return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1);
+  }
+
   /** Gets coordinates of all individual blocks of a tetromino. */
   public getAllCoords(): Coord[] {
     const currRotationCoords = this.rotationCoords[this.currRotation];
@@ -105,6 +123,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     );
   }
 
+  /** Checks whether a tetromino is in a valid position (inside the arena). */
   private isValidPosition(): boolean {
     const allCoords = this.getAllCoords();
     return allCoords.every(([xCoord, yCoord]) => inBounds(xCoord, yCoord));
@@ -127,6 +146,8 @@ export class I extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0], [1, 0]];
 
+  protected readonly blockTexture: string = LIGHT_BLUE;
+
   constructor(scene: TetrisScene) {
     super(scene, I_TEXTURE);
     this.xCoord = 4;
@@ -146,6 +167,8 @@ export class J extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
+  protected readonly blockTexture: string = BLUE;
+
   constructor(scene: TetrisScene) {
     super(scene, J_TEXTURE);
     this.xCoord = 3;
@@ -164,6 +187,8 @@ export class L extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
+  protected readonly blockTexture: string = ORANGE;
+
   constructor(scene: TetrisScene) {
     super(scene, L_TEXTURE);
     this.xCoord = 3;
@@ -178,6 +203,8 @@ export class O extends Tetromino {
     [[0, 0], [1, 0], [0, 1], [1, 1]],
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0]];
+
+  protected readonly blockTexture: string = YELLOW;
 
   constructor(scene: TetrisScene) {
     super(scene, O_TEXTURE);
@@ -194,6 +221,8 @@ export class S extends Tetromino {
     [[0, 0], [0, 1], [1, 1], [1, 2]],
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
+
+  protected readonly blockTexture: string = GREEN;
 
   constructor(scene: TetrisScene) {
     super(scene, S_TEXTURE);
@@ -213,10 +242,12 @@ export class T extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
+  protected readonly blockTexture: string = PURPLE;
+
   constructor(scene: TetrisScene) {
     super(scene, T_TEXTURE);
-    this.xCoord = 4;
-    this.yCoord = 4;
+    this.xCoord = 3;
+    this.yCoord = 0;
   }
 }
 
@@ -228,6 +259,8 @@ export class Z extends Tetromino {
     [[1, 0], [0, 1], [1, 1], [0, 2]],
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
+
+  protected readonly blockTexture: string = RED;
 
   constructor(scene: TetrisScene) {
     super(scene, Z_TEXTURE);
