@@ -46,11 +46,27 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     });
   }
 
+  /** Basic rotation only if new position is valid. */
   public rotate(): void {
+    this.updateCurrRotation((this.currRotation + 1) % this.rotations.length);
+
+    if (!this.isValidPosition()) {
+      this.updateCurrRotation(
+        (this.currRotation + this.rotations.length - 1) % this.rotations.length
+      );
+    } else {
+      this.setRotation(this.rotation + Math.PI / 2);
+    }
+  }
+
+  /** 
+   * Updates this.currRotation by unlocking it first, updating and then
+   * locking it again.
+   */
+  private updateCurrRotation(newCurrRotation: number): void {
     this.unlockFromCenter();
-    this.currRotation = (this.currRotation + 1) % this.rotations.length;
+    this.currRotation = newCurrRotation;
     this.lockToCenter();
-    this.setRotation(this.rotation + Math.PI / 2);
   }
 
   /**
@@ -108,6 +124,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     return true;
   }
 
+  /** Drops to the bottom. */
   public totalDrop(): void {
     while (this.drop()) { }
   }
