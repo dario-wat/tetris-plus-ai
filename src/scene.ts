@@ -6,6 +6,7 @@ import KeyboardInput from './lib/keyboard_input';
 import TetrominoGenerator from './game_logic/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
 import BlockHandler from './game_logic/BlockHandler';
+import GameOverButton from './game_objects/GameOverButton';
 
 // TODO show where the tetromino will drop
 // TODO show next tetromino
@@ -20,6 +21,7 @@ export class TetrisScene extends Phaser.Scene {
 
   private tetromino: Tetromino;
   private c: number = 0;
+  private gameOver: Boolean = false;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -61,18 +63,26 @@ export class TetrisScene extends Phaser.Scene {
     this.debugGraphics.clear();
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
+
+      if (this.blockHandler.isOverlapping(this.tetromino)) {
+        new GameOverButton(this);
+        console.log('what')
+        this.gameOver = true;
+      }
     }
 
 
-    this.c++;
-    // Empty for now
-    if (this.c >= 40) {
-      this.tetromino.drop();
-      this.blockHandler.crush();  // TODO do this better with repeating function
-      // TODO better crushing logic, more seamless
-      this.c = 0;
+    if (!this.gameOver) {
+      this.c++;
+      // Empty for now
+      if (this.c >= 40) {
+        this.tetromino.drop();
+        this.blockHandler.crush();  // TODO do this better with repeating function
+        // TODO better crushing logic, more seamless
+        this.c = 0;
+      }
+      // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
+      debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
     }
-    // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
-    debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
   }
 }
