@@ -82,4 +82,9 @@ export default class BlockHandler {
     }
     return false;
   }
+
+  public reset(): void {
+    this.blocks.map(block => block.destroy());
+    this.blocks = [];
+  }
 }

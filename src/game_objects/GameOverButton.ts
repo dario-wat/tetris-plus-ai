@@ -6,15 +6,17 @@ const buttonWidth = 200;
 const buttonHeight = 50;
 const cornerRadius = 10;
 const defaultColor = 0x000000; // Black
-const hoverColor = 0x888888; // Gray
+const hoverColor = 0x666666; // Gray
 const borderWidth = 2;
 const borderColor = 0xFFFFFF; // White
+const pressedColor = 0xAAAAAA; // Light gray
 
 export default class GameOverButton {
 
   private buttonGraphics: Phaser.GameObjects.Graphics;
+  private buttonContainer: Phaser.GameObjects.Container;
 
-  constructor(scene: TetrisScene) {
+  constructor(scene: TetrisScene, onClick: () => void) {
     this.buttonGraphics = scene.add.graphics();
 
     this.drawButton(defaultColor);
@@ -33,6 +35,17 @@ export default class GameOverButton {
       this.drawButton(defaultColor);
     });
 
+    this.buttonGraphics.on('pointerdown', () => {
+      this.buttonGraphics.clear();
+      this.drawButton(pressedColor);
+    });
+
+    this.buttonGraphics.on('pointerup', () => {
+      this.buttonGraphics.clear();
+      this.drawButton(defaultColor);
+      onClick();
+    });
+
     const buttonText = scene.add.text(
       buttonWidth / 2,
       buttonHeight / 2,
@@ -47,7 +60,9 @@ export default class GameOverButton {
 
     const x = X_ORIGIN + TETRIS_WIDTH * CELL_SIZE / 2 - buttonWidth / 2;
     const y = Y_ORIGIN + TETRIS_HEIGHT * CELL_SIZE / 2 - buttonHeight / 2;
-    scene.add.container(x, y, [this.buttonGraphics, buttonText]);
+    this.buttonContainer = scene.add.container(x, y, [this.buttonGraphics, buttonText]);
+    this.buttonContainer.depth = 1;
+    this.setVisible(false);
   }
 
   private drawButton(fillColor: number): void {
@@ -67,5 +82,9 @@ export default class GameOverButton {
       buttonHeight - borderWidth * 2,
       cornerRadius,
     );
+  }
+
+  public setVisible(visible: boolean): void {
+    this.buttonContainer.setVisible(visible);
   }
 }

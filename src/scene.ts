@@ -20,8 +20,9 @@ export class TetrisScene extends Phaser.Scene {
   public blockHandler: BlockHandler;
 
   private tetromino: Tetromino;
-  private c: number = 0;
-  private gameOver: Boolean = false;
+  private c: number = 0;    // TODO replace this and add speed
+  private gameOverButton: GameOverButton;
+  private gameOver: boolean = false;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -34,12 +35,18 @@ export class TetrisScene extends Phaser.Scene {
   create(): void {
     this.keys = new KeyboardInput(this);
     this.debugGraphics = this.add.graphics();
-    this.debugGraphics.depth = 1;
+    this.debugGraphics.depth = 10;
 
     this.blockHandler = new BlockHandler(this);
     new TetrisArena(this);
     this.tetrominoGenerator = new TetrominoGenerator(this);
     this.tetromino = this.tetrominoGenerator.create();
+    this.gameOverButton = new GameOverButton(this, () => {
+      this.tetrominoGenerator.reset();
+      this.blockHandler.reset();
+      this.gameOver = false;
+      this.tetromino.destroy();
+    });
 
     this.keys.e.on('down', () => {
       this.tetromino.rotate();
@@ -61,11 +68,11 @@ export class TetrisScene extends Phaser.Scene {
 
   update(): void {
     this.debugGraphics.clear();
+    this.gameOverButton.setVisible(this.gameOver);
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
 
       if (this.blockHandler.isOverlapping(this.tetromino)) {
-        new GameOverButton(this);
         console.log('what')
         this.gameOver = true;
       }

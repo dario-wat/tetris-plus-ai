@@ -36,6 +36,10 @@ export default class TetrominoGenerator {
         return new Z(this.scene);
     }
   }
+
+  public reset(): void {
+    this.queue = [];
+  }
 }
 
 /** 
