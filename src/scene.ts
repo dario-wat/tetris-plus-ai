@@ -7,6 +7,7 @@ import TetrominoGenerator from './game_logic/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
 import BlockHandler from './game_logic/BlockHandler';
 import GameOverButton from './game_objects/GameOverButton';
+import NextTetromino from './game_objects/NextTetromino';
 
 // TODO show where the tetromino will drop
 // TODO show next tetromino
@@ -19,7 +20,7 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
   private debugGraphics: Phaser.GameObjects.Graphics;
 
-  private tetrominoGenerator: TetrominoGenerator;
+  public tetrominoGenerator: TetrominoGenerator;
   public blockHandler: BlockHandler;
 
   private tetromino: Tetromino;
@@ -43,6 +44,7 @@ export class TetrisScene extends Phaser.Scene {
     new TetrisArena(this);
     this.tetrominoGenerator = new TetrominoGenerator(this);
     this.tetromino = this.tetrominoGenerator.create();
+    new NextTetromino(this);
     this.gameOverButton = new GameOverButton(this, () => {
       this.tetrominoGenerator.reset();
       this.blockHandler.reset();
@@ -103,6 +105,8 @@ export class TetrisScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
+
+    console.log(this.tetrominoGenerator.next)
 
     this.tetromino.drop();
     this.blockHandler.crush();

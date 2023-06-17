@@ -5,19 +5,22 @@ import { TetrisScene } from "../scene";
 export default class TetrominoGenerator {
 
   private queue: number[] = [];
+  public next: number;
 
   constructor(public scene: TetrisScene) { }
 
   /** Creates a new tetromino in the scene. */
   public create(): Tetromino {
-    if (this.queue.length === 0) {
-      this.queue = newShuffledQueue();
+    if (this.queue.length <= 1) {
+      this.queue = [...this.queue, ...newShuffledQueue()];
     }
 
     const index = this.queue.shift();
+    this.next = this.queue[0];
     return this.createTetromino(index);
   }
 
+  // TODO replace with enum
   private createTetromino(index: number): Tetromino {
     switch (index) {
       case 0:
