@@ -10,7 +10,6 @@ import GameOverButton from './game_objects/GameOverButton';
 import NextTetromino from './game_objects/NextTetromino';
 
 // TODO show where the tetromino will drop
-// TODO show next tetromino
 // TODO score & speed
 
 const DELAY_MS = 400;
@@ -105,8 +104,6 @@ export class TetrisScene extends Phaser.Scene {
     if (this.gameOver) {
       return;
     }
-
-    console.log(this.tetrominoGenerator.next)
 
     this.tetromino.drop();
     this.blockHandler.crush();

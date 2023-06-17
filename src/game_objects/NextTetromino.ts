@@ -1,6 +1,7 @@
 import { NEXT_TETROMINO_X, NEXT_TETROMINO_Y, SCALE } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
+import { TetrominoEnum } from "../lib/tetromino_enum";
 
 /** Shows what the next Tetromino is in the sequence. */
 export default class NextTetromino extends Phaser.GameObjects.Sprite {
@@ -33,22 +34,21 @@ export default class NextTetromino extends Phaser.GameObjects.Sprite {
     });
   }
 
-  // TODO replace with enum
-  private getNextTetrominoTexture(nextIndex: number): string {
+  private getNextTetrominoTexture(nextIndex: TetrominoEnum): string {
     switch (nextIndex) {
-      case 0:
+      case TetrominoEnum.I:
         return I_TEXTURE;
-      case 1:
+      case TetrominoEnum.J:
         return J_TEXTURE;
-      case 2:
+      case TetrominoEnum.L:
         return L_TEXTURE;
-      case 3:
+      case TetrominoEnum.O:
         return O_TEXTURE;
-      case 4:
+      case TetrominoEnum.S:
         return S_TEXTURE;
-      case 5:
+      case TetrominoEnum.T:
         return T_TEXTURE;
-      case 6:
+      case TetrominoEnum.Z:
         return Z_TEXTURE;
     }
   }

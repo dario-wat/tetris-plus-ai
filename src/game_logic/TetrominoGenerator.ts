@@ -1,11 +1,12 @@
 import { shuffle } from "lodash";
 import { I, J, L, O, S, T, Tetromino, Z } from "../game_objects/Tetromino";
 import { TetrisScene } from "../scene";
+import { TetrominoEnum } from "../lib/tetromino_enum";
 
 export default class TetrominoGenerator {
 
-  private queue: number[] = [];
-  public next: number;
+  private queue: TetrominoEnum[] = [];
+  public next: TetrominoEnum;
 
   constructor(public scene: TetrisScene) { }
 
@@ -15,27 +16,26 @@ export default class TetrominoGenerator {
       this.queue = [...this.queue, ...newShuffledQueue()];
     }
 
-    const index = this.queue.shift();
+    const tetromino = this.queue.shift();
     this.next = this.queue[0];
-    return this.createTetromino(index);
+    return this.createTetromino(tetromino);
   }
 
-  // TODO replace with enum
-  private createTetromino(index: number): Tetromino {
+  private createTetromino(index: TetrominoEnum): Tetromino {
     switch (index) {
-      case 0:
+      case TetrominoEnum.I:
         return new I(this.scene);
-      case 1:
+      case TetrominoEnum.J:
         return new J(this.scene);
-      case 2:
+      case TetrominoEnum.L:
         return new L(this.scene);
-      case 3:
+      case TetrominoEnum.O:
         return new O(this.scene);
-      case 4:
+      case TetrominoEnum.S:
         return new S(this.scene);
-      case 5:
+      case TetrominoEnum.T:
         return new T(this.scene);
-      case 6:
+      case TetrominoEnum.Z:
         return new Z(this.scene);
     }
   }
@@ -45,11 +45,16 @@ export default class TetrominoGenerator {
   }
 }
 
-/** 
- * Creates shuffled indices for 7 unique tetrominoes. 
- * TODO this is hardcoded and if I need to add new unique tetrominoes
- *   this will need to be updated.
- */
-function newShuffledQueue(): number[] {
-  return shuffle([0, 1, 2, 3, 4, 5, 6]);
+/** Creates shuffled indices for 7 unique tetrominoes. */
+function newShuffledQueue(): TetrominoEnum[] {
+  return shuffle([
+    TetrominoEnum.I,
+    TetrominoEnum.J,
+    TetrominoEnum.L,
+    TetrominoEnum.O,
+    TetrominoEnum.S,
+    TetrominoEnum.T,
+    TetrominoEnum.Z,
+  ]);
 }
+
