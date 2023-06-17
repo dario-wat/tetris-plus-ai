@@ -10,6 +10,9 @@ import GameOverButton from './game_objects/GameOverButton';
 
 // TODO show where the tetromino will drop
 // TODO show next tetromino
+// TODO score & speed
+
+const DELAY_MS = 400;
 
 export class TetrisScene extends Phaser.Scene {
 
@@ -20,7 +23,6 @@ export class TetrisScene extends Phaser.Scene {
   public blockHandler: BlockHandler;
 
   private tetromino: Tetromino;
-  private c: number = 0;    // TODO replace this and add speed
   private gameOverButton: GameOverButton;
   private gameOver: boolean = false;
 
@@ -46,50 +48,70 @@ export class TetrisScene extends Phaser.Scene {
       this.blockHandler.reset();
       this.gameOver = false;
       this.tetromino.destroy();
+      this.createNewTetromino();
     });
 
     this.keys.e.on('down', () => {
-      this.tetromino.rotate();
+      if (!this.gameOver) {
+        this.tetromino.rotate();
+      }
     });
     this.keys.d.on('down', () => {
-      this.tetromino.moveRight();
+      if (!this.gameOver) {
+        this.tetromino.moveRight();
+      }
     });
     this.keys.a.on('down', () => {
-      this.tetromino.moveLeft();
+      if (!this.gameOver) {
+        this.tetromino.moveLeft();
+      }
     });
     this.keys.s.on('down', () => {
-      this.tetromino.drop();
+      if (!this.gameOver) {
+        this.tetromino.drop();
+      }
     });
     this.keys.space.on('down', () => {
-      this.tetromino.totalDrop();
+      if (!this.gameOver && this.tetromino.scene) {
+        this.tetromino.totalDrop();
+        this.createNewTetromino();
+      }
+    });
+
+    this.time.addEvent({
+      delay: DELAY_MS,
+      callback: this.makeStep,
+      callbackScope: this,
+      loop: true,
     });
   }
 
+  // This is not ideal since it's used in many places and ideally it should
+  // be used in only one place. But it works
+  private createNewTetromino(): void {
+    if (!this.tetromino.scene) {
+      this.tetromino = this.tetrominoGenerator.create();
+
+      // Game Over logic
+      if (this.blockHandler.isOverlapping(this.tetromino)) {
+        this.gameOver = true;
+      }
+    }
+  }
+
+  makeStep(): void {
+    if (this.gameOver) {
+      return;
+    }
+
+    this.tetromino.drop();
+    this.blockHandler.crush();  // TODO better crushing logic
+    this.createNewTetromino();
+  }
 
   update(): void {
     this.debugGraphics.clear();
     this.gameOverButton.setVisible(this.gameOver);
-    if (!this.tetromino.scene) {
-      this.tetromino = this.tetrominoGenerator.create();
-
-      if (this.blockHandler.isOverlapping(this.tetromino)) {
-        console.log('what')
-        this.gameOver = true;
-      }
-    }
-
-
-    if (!this.gameOver) {
-      this.c++;
-      // Empty for now
-      if (this.c >= 40) {
-        this.tetromino.drop();
-        this.blockHandler.crush();  // TODO do this better with repeating function
-        // TODO better crushing logic, more seamless
-        this.c = 0;
-      }
-      // debugPoints(this.debugGraphics, this.tetr.getAllCoords());
-      debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
-    }
+    debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
   }
 }
