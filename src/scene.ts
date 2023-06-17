@@ -105,7 +105,7 @@ export class TetrisScene extends Phaser.Scene {
     }
 
     this.tetromino.drop();
-    this.blockHandler.crush();  // TODO better crushing logic
+    this.blockHandler.crush();
     this.createNewTetromino();
   }
 

@@ -3,7 +3,6 @@ import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
 import { SCALE, TETRIS_HEIGHT, TETRIS_WIDTH } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
-import Block from './Block';
 
 type RotationSize = [number, number]
 type Coord = [number, number];
@@ -16,9 +15,6 @@ type Coord = [number, number];
  */
 export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
-  public xCoord: number;
-  public yCoord: number;
-
   /** Width and height for each individual rotation */
   protected abstract readonly rotations: RotationSize[];
   /** Coordinate offsets for each individual block in a tetromino. */
@@ -29,21 +25,34 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   public abstract readonly blockTexture: string;
 
-  constructor(public scene: TetrisScene, texture: string) {
-    // TODO(fix 0 0 here)
+  protected constructor(
+    public scene: TetrisScene,
+    texture: string,
+    public xCoord: number,
+    public yCoord: number,
+  ) {
     super(scene, 0, 0, texture);
     scene.add.existing(this);
 
     this.setScale(SCALE);
 
     this.scene.events.on('update', () => {
-      const tetrWidth = this.rotations[this.currRotation][0];
-      const tetrHeight = this.rotations[this.currRotation][1];
-      this.setPosition(
-        cx(this.xCoord, tetrWidth),
-        cy(this.yCoord, tetrHeight),
-      );
+      this.updatePosition();
     });
+  }
+
+  /**
+   * Updates the position of the tetromino based on the coordinates and the
+   * rotation. This is called inside each tetromino constructor even
+   * though it probably shouldn't.
+   */
+  protected updatePosition(): void {
+    const tetrWidth = this.rotations[this.currRotation][0];
+    const tetrHeight = this.rotations[this.currRotation][1];
+    this.setPosition(
+      cx(this.xCoord, tetrWidth),
+      cy(this.yCoord, tetrHeight),
+    );
   }
 
   /** Basic rotation only if new position is valid. */
@@ -174,9 +183,8 @@ export class I extends Tetromino {
   public readonly blockTexture: string = LIGHT_BLUE;
 
   constructor(scene: TetrisScene) {
-    super(scene, I_TEXTURE);
-    this.xCoord = 4;
-    this.yCoord = 0;
+    super(scene, I_TEXTURE, 4, 0);
+    this.updatePosition();
     this.rotate();
   }
 }
@@ -195,9 +203,8 @@ export class J extends Tetromino {
   public readonly blockTexture: string = BLUE;
 
   constructor(scene: TetrisScene) {
-    super(scene, J_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 0;
+    super(scene, J_TEXTURE, 3, 0);
+    this.updatePosition();
   }
 }
 
@@ -215,9 +222,8 @@ export class L extends Tetromino {
   public readonly blockTexture: string = ORANGE;
 
   constructor(scene: TetrisScene) {
-    super(scene, L_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 0;
+    super(scene, L_TEXTURE, 3, 0);
+    this.updatePosition();
   }
 }
 
@@ -232,9 +238,7 @@ export class O extends Tetromino {
   public readonly blockTexture: string = YELLOW;
 
   constructor(scene: TetrisScene) {
-    super(scene, O_TEXTURE);
-    this.xCoord = 4;
-    this.yCoord = 0;
+    super(scene, O_TEXTURE, 4, 0);
   }
 }
 
@@ -250,9 +254,8 @@ export class S extends Tetromino {
   public readonly blockTexture: string = GREEN;
 
   constructor(scene: TetrisScene) {
-    super(scene, S_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 0;
+    super(scene, S_TEXTURE, 3, 0);
+    this.updatePosition();
   }
 }
 
@@ -270,9 +273,8 @@ export class T extends Tetromino {
   public readonly blockTexture: string = PURPLE;
 
   constructor(scene: TetrisScene) {
-    super(scene, T_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 0;
+    super(scene, T_TEXTURE, 3, 0);
+    this.updatePosition();
   }
 }
 
@@ -288,8 +290,7 @@ export class Z extends Tetromino {
   public readonly blockTexture: string = RED;
 
   constructor(scene: TetrisScene) {
-    super(scene, Z_TEXTURE);
-    this.xCoord = 3;
-    this.yCoord = 0;
+    super(scene, Z_TEXTURE, 3, 0);
+    this.updatePosition();
   }
 }
