@@ -68,7 +68,7 @@ export class TetrisScene extends Phaser.Scene {
       }
     });
     this.keys.s.on('down', () => {
-      if (!this.gameOver) {
+      if (!this.gameOver && this.tetromino.scene) {
         this.tetromino.drop();
       }
     });
