@@ -12,6 +12,7 @@ import NextTetromino from './game_objects/NextTetromino';
 // TODO show where the tetromino will drop
 // TODO score & speed
 // TODO finish ghost tetromino
+// TODO heuristic
 
 const DELAY_MS = 400;
 

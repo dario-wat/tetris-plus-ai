@@ -4,8 +4,6 @@ import { Tetromino } from "../game_objects/Tetromino";
 import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 
-const X_INDICES_STR = JSON.stringify(range(0, TETRIS_WIDTH));
-
 /**
  * Represents an individual immovable block that is created once the
  * tetromino hits the bottom.
@@ -31,6 +29,7 @@ export default class BlockHandler {
 
   /** Converts a Tetromino into immovable individual blocks. */
   public destructureTetromino(tetromino: Tetromino): void {
+    // TODO only allowed when touching the top of the stack
     const coords = tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
       this.blocks.push(
@@ -46,10 +45,9 @@ export default class BlockHandler {
    */
   public crush(): void {
     const rows = Object.values(groupBy(this.blocks, block => block.yCoord));
-    const rowsToCrush = rows.filter(row =>
-      // Blocks cover all X indices (entire row)
-      JSON.stringify(row.map(block => block.xCoord).sort()) === X_INDICES_STR
-    );
+
+    // Blocks cover all X indices (entire row)
+    const rowsToCrush = rows.filter(row => row.length === TETRIS_WIDTH);
     const rowIndicesToCrush = uniq(
       flatten(rowsToCrush).map(block => block.yCoord)
     );
