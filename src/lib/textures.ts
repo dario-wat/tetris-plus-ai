@@ -14,6 +14,7 @@ import orangeImage from '../../assets/Orange.png';
 import purpleImage from '../../assets/Purple.png';
 import redImage from '../../assets/Red.png';
 import yellowImage from '../../assets/Yellow.png';
+import ghostBlockImage from '../../assets/GhostSingle.png';
 
 export const I_TEXTURE = 'i';
 export const J_TEXTURE = 'j';
@@ -33,6 +34,8 @@ export const PURPLE = 'purple';
 export const RED = 'red';
 export const YELLOW = 'yellow';
 
+export const GHOST_BLOCK = 'ghost_block';
+
 export function preloadTextures(scene: Phaser.Scene): void {
   scene.load.image(I_TEXTURE, iImage);
   scene.load.image(J_TEXTURE, jImage);
@@ -51,4 +54,6 @@ export function preloadTextures(scene: Phaser.Scene): void {
   scene.load.image(PURPLE, purpleImage);
   scene.load.image(RED, redImage);
   scene.load.image(YELLOW, yellowImage);
+
+  scene.load.image(GHOST_BLOCK, ghostBlockImage);
 }

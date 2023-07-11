@@ -11,6 +11,7 @@ import NextTetromino from './game_objects/NextTetromino';
 
 // TODO show where the tetromino will drop
 // TODO score & speed
+// TODO finish ghost tetromino
 
 const DELAY_MS = 400;
 
@@ -52,7 +53,7 @@ export class TetrisScene extends Phaser.Scene {
       this.createNewTetromino();
     });
 
-    this.keys.e.on('down', () => {
+    this.keys.w.on('down', () => {
       if (!this.gameOver) {
         this.tetromino.rotate();
       }
@@ -114,5 +115,6 @@ export class TetrisScene extends Phaser.Scene {
     this.debugGraphics.clear();
     this.gameOverButton.setVisible(this.gameOver);
     debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
+    this.blockHandler.debugHeuristic();
   }
 }

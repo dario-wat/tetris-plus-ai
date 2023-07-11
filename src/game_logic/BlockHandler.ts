@@ -1,7 +1,7 @@
-import { flatten, groupBy, range, uniq } from "lodash";
+import { flatten, groupBy, max, min, range, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { TETRIS_WIDTH } from "../lib/consts";
+import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 
 const X_INDICES_STR = JSON.stringify(range(0, TETRIS_WIDTH));
@@ -12,9 +12,22 @@ const X_INDICES_STR = JSON.stringify(range(0, TETRIS_WIDTH));
  */
 export default class BlockHandler {
 
+  private debugText: Phaser.GameObjects.Text;
+
   private blocks: Block[] = [];
 
-  constructor(public scene: TetrisScene) { }
+  constructor(public scene: TetrisScene) {
+    this.debugText = this.scene.add.text(
+      100,
+      100,
+      '',
+      {
+        fontFamily: 'Arial',
+        fontSize: '12px',
+        color: '#FFFFFF' // White color
+      }
+    );
+  }
 
   /** Converts a Tetromino into immovable individual blocks. */
   public destructureTetromino(tetromino: Tetromino): void {
@@ -86,5 +99,26 @@ export default class BlockHandler {
   public reset(): void {
     this.blocks.map(block => block.destroy());
     this.blocks = [];
+  }
+
+  private heights(): number[] {
+    const heights = Array(TETRIS_WIDTH).fill(0);
+    const columns = Object.values(groupBy(this.blocks, block => block.xCoord));
+    columns.forEach(column => {
+      const height = min(column.map(block => block.yCoord));
+      heights[column[0].xCoord] = TETRIS_HEIGHT - height;
+    });
+    return heights;
+  }
+
+  public heightsSum(): number {
+    return sum(this.heights());
+  }
+
+  public debugHeuristic(): void {
+    this.debugText.setText(
+      'Heights: ' + this.heights().toString()
+      + '\nHeight sum: ' + this.heightsSum()
+    );
   }
 }
