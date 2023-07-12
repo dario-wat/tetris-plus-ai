@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import { TetrisScene } from "../scene";
-import { CELL_SIZE, TETRIS_HEIGHT, TETRIS_WIDTH, X_ORIGIN, Y_ORIGIN } from "../lib/consts";
+import { CELL_SIZE, GAME_OVER_BUTTON_DEPTH, TETRIS_HEIGHT, TETRIS_WIDTH, X_ORIGIN, Y_ORIGIN } from "../lib/consts";
 
 const buttonWidth = 200;
 const buttonHeight = 50;
@@ -61,7 +61,7 @@ export default class GameOverButton {
     const x = X_ORIGIN + TETRIS_WIDTH * CELL_SIZE / 2 - buttonWidth / 2;
     const y = Y_ORIGIN + TETRIS_HEIGHT * CELL_SIZE / 2 - buttonHeight / 2;
     this.buttonContainer = scene.add.container(x, y, [this.buttonGraphics, buttonText]);
-    this.buttonContainer.depth = 1;
+    this.buttonContainer.depth = GAME_OVER_BUTTON_DEPTH;
     this.setVisible(false);
   }
 

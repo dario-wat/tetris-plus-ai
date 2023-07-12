@@ -8,6 +8,7 @@ import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import GameOverButton from './game_objects/GameOverButton';
 import NextTetromino from './game_objects/NextTetromino';
+import { DEBUG_GRAPHICS_DEPTH } from './lib/consts';
 
 // TODO show where the tetromino will drop
 // TODO score & speed
@@ -44,7 +45,7 @@ export class TetrisScene extends Phaser.Scene {
   create(): void {
     this.keys = new KeyboardInput(this);
     this.debugGraphics = this.add.graphics();
-    this.debugGraphics.depth = 10;
+    this.debugGraphics.depth = DEBUG_GRAPHICS_DEPTH;
 
     this.tetrisState = new TetrisState(this);
     new TetrisArena(this);

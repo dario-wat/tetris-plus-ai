@@ -16,3 +16,7 @@ export const NEXT_TETROMINO_Y = 200;
 // Position of the heuristic debug text
 export const DEBUG_TEXT_X = 700;
 export const DEBUG_TEXT_Y = 300;
+
+// Depth for various UI components. Depth is the z component
+export const DEBUG_GRAPHICS_DEPTH = 10;
+export const GAME_OVER_BUTTON_DEPTH = 1;
