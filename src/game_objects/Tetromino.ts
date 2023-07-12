@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
-import { SCALE, TETRIS_HEIGHT, TETRIS_WIDTH } from '../lib/consts';
+import { SCALE } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
 
 type RotationSize = [number, number]
@@ -15,6 +15,9 @@ type Coord = [number, number];
  */
 export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
+  /** Texture of the individual blocks. */
+  public abstract readonly blockTexture: string;
+
   /** Width and height for each individual rotation */
   protected abstract readonly rotations: RotationSize[];
   /** Coordinate offsets for each individual block in a tetromino. */
@@ -22,8 +25,6 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   /** Coordinate offset for the center of the tetromino. */
   protected abstract readonly rotationCenterOffset: Coord[];
   protected currRotation: number = 0;
-
-  public abstract readonly blockTexture: string;
 
   protected constructor(
     public scene: TetrisScene,
@@ -55,17 +56,28 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     );
   }
 
-  /** Basic rotation only if new position is valid. */
-  public rotate(): void {
-    this.updateCurrRotation((this.currRotation + 1) % this.rotations.length);
+  public moveRight(): void {
+    this.xCoord += 1;
+  }
 
-    if (!this.isValidPosition()) {
-      this.updateCurrRotation(
-        (this.currRotation + this.rotations.length - 1) % this.rotations.length
-      );
-    } else {
-      this.setRotation(this.rotation + Math.PI / 2);
-    }
+  public moveLeft(): void {
+    this.xCoord -= 1;
+  }
+
+  public drop(): void {
+    this.yCoord += 1;
+  }
+
+  public rotateRight(): void {
+    this.updateCurrRotation((this.currRotation + 1) % this.rotations.length);
+    this.setRotation(this.rotation + Math.PI / 2);
+  }
+
+  public rotateLeft(): void {
+    this.updateCurrRotation(
+      (this.currRotation + this.rotations.length - 1) % this.rotations.length
+    );
+    this.setRotation(this.rotation - Math.PI / 2);
   }
 
   /** 
@@ -100,31 +112,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   /** 
    * This is used only for debugging. It is the same as unlock because all
-   * tetrominoes are locked t center by default.
+   * tetrominoes are locked to center by default.
    */
   public getCenterPoint(): Coord {
     const dx = this.rotationCenterOffset[this.currRotation][0];
     const dy = this.rotationCenterOffset[this.currRotation][1];
     return [this.xCoord + dx, this.yCoord + dy];
-  }
-
-  public moveRight(): void {
-    this.xCoord += 1;
-    if (!this.isValidPosition()) {
-      this.xCoord -= 1;
-    }
-  }
-
-  public moveLeft(): void {
-    this.xCoord -= 1;
-    if (!this.isValidPosition()) {
-      this.xCoord += 1;
-    }
-  }
-
-  /** Drops the tetromino by one and return true if it got dropped. */
-  public drop(): void {
-    this.yCoord += 1;
   }
 
   /** Gets coordinates of all individual blocks of a tetromino. */
@@ -134,20 +127,6 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
       [this.xCoord + dx, this.yCoord + dy]
     );
   }
-
-  /** Checks whether a tetromino is in a valid position (inside the arena). */
-  private isValidPosition(): boolean {
-    const allCoords = this.getAllCoords();
-    return allCoords.every(([xCoord, yCoord]) => inBounds(xCoord, yCoord))
-      && !this.scene.tetrisState.isOverlapping(this);
-  }
-}
-
-function inBounds(xCoord: number, yCoord: number): boolean {
-  return xCoord >= 0
-    && xCoord < TETRIS_WIDTH
-    && yCoord >= 0
-    && yCoord < TETRIS_HEIGHT;
 }
 
 export class I extends Tetromino {
@@ -164,7 +143,7 @@ export class I extends Tetromino {
   constructor(scene: TetrisScene) {
     super(scene, I_TEXTURE, 4, 0);
     this.updatePosition();
-    this.rotate();
+    this.rotateRight();
   }
 }
 

@@ -60,7 +60,7 @@ export default class TetrisState {
       this.tetromino = this.tetrominoGenerator.create();
 
       // Game Over logic
-      if (this.isOverlapping(this.tetromino)) {
+      if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
       }
     }
@@ -87,24 +87,56 @@ export default class TetrisState {
     this.createNewTetromino();
   }
 
+  /** 
+   * Rotates only if the ending state is valid (not outside of bounds
+   * nor overlapping).
+   */
   public tetrominoRotate(): void {
-    if (!this.gameOver) {
-      this.tetromino.rotate();
+    if (this.gameOver) {
+      return;
+    }
+
+    this.tetromino.rotateRight();
+    if (!this.isValidState()) {
+      this.tetromino.rotateLeft();
     }
   }
 
+  /** 
+   * Moves right only if the ending state is valid (not outside of bounds
+   * nor overlapping).
+   */
   public tetrominoMoveRight(): void {
-    if (!this.gameOver) {
-      this.tetromino.moveRight();
+    if (this.gameOver) {
+      return;
     }
-  }
 
-  public tetrominoMoveLeft(): void {
-    if (!this.gameOver) {
+    this.tetromino.moveRight();
+    if (!this.isValidState()) {
       this.tetromino.moveLeft();
     }
   }
 
+  /** 
+   * Moves left only if the ending state is valid (not outside of bounds
+   * nor overlapping).
+   */
+  public tetrominoMoveLeft(): void {
+    if (this.gameOver) {
+      return;
+    }
+
+    this.tetromino.moveLeft();
+    if (!this.isValidState()) {
+      this.tetromino.moveRight();
+    }
+  }
+
+  /**
+   * Drops the tetromino once if possible and returns true if the tetromino
+   * dropped. The tetromino cannot drop if it's touching the bottom of the
+   * board or the top of the stack.
+   */
   public tetrominoDrop(): boolean {
     if (this.gameOver || !this.tetromino.scene) {
       return false;
@@ -113,13 +145,14 @@ export default class TetrisState {
     if (this.canTetrominoDrop()) {
       this.tetromino.drop();
       return true;
-    } else {
-      this.destructureTetromino();
-      this.tetromino.destroy();
-      return false;
     }
+
+    this.destructureTetromino();
+    this.tetromino.destroy();
+    return false;
   }
 
+  /** Drops the tetromino to the bottom. */
   public tetrominoTotalDrop(): void {
     if (!this.gameOver && this.tetromino.scene) {
       while (this.tetrominoDrop()) { }
@@ -217,8 +250,28 @@ export default class TetrisState {
     return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1);
   }
 
-  public isOverlapping(tetromino: Tetromino): boolean {
-    const coords = tetromino.getAllCoords();
+  /**
+   * State is invalid if the tetromino overlaps with the existing blocks
+   * or if the tetromino is outside of the bounds.
+   */
+  private isValidState(): boolean {
+    return this.isTetrominoInBounds() && !this.isTetrominoOverlapping();
+  }
+
+  /** Checks whether the tetromino is in bound of the board. */
+  private isTetrominoInBounds(): boolean {
+    const coords = this.tetromino.getAllCoords();
+    return coords.every(([xCoord, yCoord]) =>
+      xCoord >= 0
+      && xCoord < TETRIS_WIDTH
+      && yCoord >= 0
+      && yCoord < TETRIS_HEIGHT
+    );
+  }
+
+  /** Checks whether the tetromino is overlapping with any existing blocks. */
+  private isTetrominoOverlapping(): boolean {
+    const coords = this.tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
       const overlaps = this.blocks.some(block =>
         xCoord === block.xCoord && yCoord === block.yCoord
