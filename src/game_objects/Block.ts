@@ -3,6 +3,7 @@ import { SCALE } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
 import { TetrisScene } from '../scene';
 
+/** Immovable single block of a tetromino once it hits the bottom. */
 export default class Block extends Phaser.GameObjects.Sprite {
 
   constructor(

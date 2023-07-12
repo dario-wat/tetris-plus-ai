@@ -1,4 +1,4 @@
-import { flatten, groupBy, max, min, range, sum, uniq } from "lodash";
+import { flatten, groupBy, min, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
 import { DEBUG_TEXT_X, DEBUG_TEXT_Y, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
@@ -8,7 +8,7 @@ import { TetrisScene } from "../scene";
  * Represents an individual immovable block that is created once the
  * tetromino hits the bottom.
  */
-export default class BlockHandler {
+export default class TetrisState {
 
   private debugText: Phaser.GameObjects.Text;
 

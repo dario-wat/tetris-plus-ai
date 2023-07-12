@@ -125,7 +125,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   /** Drops the tetromino by one and return true if it got dropped. */
   public drop(): boolean {
     if (this.isAtBottom()) {
-      this.scene?.blockHandler.destructureTetromino(this);
+      this.scene?.tetrisState.destructureTetromino(this);
       this.destroy();
       return false;
     }
@@ -145,7 +145,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   private isAtBottom(): boolean {
     const coords = this.getAllCoords();
     return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1)
-      || this.scene?.blockHandler.isTetrominoAtTheBottom(this);
+      || this.scene?.tetrisState.isTetrominoAtTheBottom(this);
   }
 
   /** Gets coordinates of all individual blocks of a tetromino. */
@@ -160,7 +160,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   private isValidPosition(): boolean {
     const allCoords = this.getAllCoords();
     return allCoords.every(([xCoord, yCoord]) => inBounds(xCoord, yCoord))
-      && !this.scene.blockHandler.isOverlapping(this);
+      && !this.scene.tetrisState.isOverlapping(this);
   }
 }
 

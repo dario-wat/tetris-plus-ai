@@ -5,7 +5,7 @@ import { debugPoint, debugPoints } from './lib/debug';
 import KeyboardInput from './lib/keyboard_input';
 import TetrominoGenerator from './game_logic/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
-import BlockHandler from './game_logic/BlockHandler';
+import TetrisState from './game_logic/TetrisState';
 import GameOverButton from './game_objects/GameOverButton';
 import NextTetromino from './game_objects/NextTetromino';
 
@@ -13,11 +13,10 @@ import NextTetromino from './game_objects/NextTetromino';
 // TODO score & speed
 // TODO finish ghost tetromino
 // TODO heuristic
-// TODO make blockhandler the game state
 // To clean up:
 // - NextTetromino
 // - Tetromino
-// - BlockHandler
+// - TetrisState
 // TODO add config
 
 const DELAY_MS = 400;
@@ -28,7 +27,7 @@ export class TetrisScene extends Phaser.Scene {
   private debugGraphics: Phaser.GameObjects.Graphics;
 
   public tetrominoGenerator: TetrominoGenerator;
-  public blockHandler: BlockHandler;
+  public tetrisState: TetrisState;
 
   private tetromino: Tetromino;
   private gameOverButton: GameOverButton;
@@ -47,14 +46,14 @@ export class TetrisScene extends Phaser.Scene {
     this.debugGraphics = this.add.graphics();
     this.debugGraphics.depth = 10;
 
-    this.blockHandler = new BlockHandler(this);
+    this.tetrisState = new TetrisState(this);
     new TetrisArena(this);
     this.tetrominoGenerator = new TetrominoGenerator(this);
     this.tetromino = this.tetrominoGenerator.create();
     new NextTetromino(this);
     this.gameOverButton = new GameOverButton(this, () => {
       this.tetrominoGenerator.reset();
-      this.blockHandler.reset();
+      this.tetrisState.reset();
       this.gameOver = false;
       this.tetromino.destroy();
       this.createNewTetromino();
@@ -102,7 +101,7 @@ export class TetrisScene extends Phaser.Scene {
       this.tetromino = this.tetrominoGenerator.create();
 
       // Game Over logic
-      if (this.blockHandler.isOverlapping(this.tetromino)) {
+      if (this.tetrisState.isOverlapping(this.tetromino)) {
         this.gameOver = true;
       }
     }
@@ -114,7 +113,7 @@ export class TetrisScene extends Phaser.Scene {
     }
 
     this.tetromino.drop();
-    this.blockHandler.crush();
+    this.tetrisState.crush();
     this.createNewTetromino();
   }
 
@@ -122,6 +121,6 @@ export class TetrisScene extends Phaser.Scene {
     this.debugGraphics.clear();
     this.gameOverButton.setVisible(this.gameOver);
     debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
-    this.blockHandler.debugHeuristic();
+    this.tetrisState.debugHeuristic();
   }
 }
