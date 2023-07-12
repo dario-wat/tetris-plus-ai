@@ -1,22 +1,16 @@
 import * as Phaser from 'phaser';
 import TetrisArena from './game_objects/TetrisArena';
-import { Tetromino } from './game_objects/Tetromino';
-import { debugPoint, debugPoints } from './lib/debug';
 import KeyboardInput from './lib/keyboard_input';
-import TetrominoGenerator from './game_logic/TetrominoGenerator';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
-import GameOverButton from './game_objects/GameOverButton';
 import NextTetromino from './game_objects/NextTetromino';
 import { DEBUG_GRAPHICS_DEPTH } from './lib/consts';
 
-// TODO show where the tetromino will drop
+// TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
-// TODO finish ghost tetromino
 // TODO heuristic
 // To clean up:
 // - NextTetromino
-// - Tetromino
 // - TetrisState
 // TODO add config
 

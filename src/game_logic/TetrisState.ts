@@ -55,6 +55,7 @@ export default class TetrisState {
 
   // This is not ideal since it's used in many places and ideally it should
   // be used in only one place. But it works
+  // TODO what to do with this
   private createNewTetromino(): void {
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
@@ -85,6 +86,13 @@ export default class TetrisState {
     this.tetrominoDrop();
     this.crush();
     this.createNewTetromino();
+  }
+
+  // TODO should include resetting other stuff from game over button
+  // TODO maybe private?
+  public reset(): void {
+    this.blocks.map(block => block.destroy());
+    this.blocks = [];
   }
 
   /** 
@@ -161,63 +169,10 @@ export default class TetrisState {
   }
 
 
-
-
   /******************************************************************
-   * 
+   * A collections of private functions to check the state of the
+   * tetromino, e.g. is out of bounds, can it drop, ...
    *****************************************************************/
-
-  /** Groups rows of blocks together. */
-  private rows(): Block[][] {
-    return Object.values(groupBy(this.blocks, block => block.yCoord));
-  }
-
-  /** Groups columns of blocks together. */
-  private columns(): Block[][] {
-    return Object.values(groupBy(this.blocks, block => block.xCoord));
-  }
-
-  /** Row indices fully covered by blocks. These rows need to be crushed. */
-  private fullRows(): number[] {
-    const rows = this.rows();
-    const rowsToCrush = rows.filter(row => row.length === TETRIS_WIDTH);
-    return uniq(flatten(rowsToCrush).map(block => block.yCoord));
-  }
-
-  /**
-   * Crushes all rows that are full. Does it by finding rows where blocks
-   * cover all X indices, removing them from the list and destroying the
-   * sprites, and drop all blocks above the rows by 1.
-   */
-  public crush(): void {
-    const fullRows = this.fullRows();
-
-    for (const indexToCrush of fullRows.sort()) {
-      // Destroy Blocks that should be crushed
-      this.blocks.filter(block => block.yCoord === indexToCrush)
-        .forEach(block => block.destroy());
-
-      // Remove Blocks that should be crushed
-      this.blocks = this.blocks.filter(block => block.yCoord !== indexToCrush);
-
-      // Drop blocks that are above the crushed row
-      this.blocks.filter(block => block.yCoord < indexToCrush)
-        .forEach(block => {
-          block.yCoord += 1;
-        });
-    }
-  }
-
-  /** Converts a Tetromino into immovable individual blocks. */
-  public destructureTetromino(): void {
-    // TODO only allowed when touching the top of the stack
-    const coords = this.tetromino.getAllCoords();
-    for (const [xCoord, yCoord] of coords) {
-      this.blocks.push(
-        new Block(this.scene, xCoord, yCoord, this.tetromino.blockTexture)
-      );
-    }
-  }
 
   /** 
    * Checks whether the tetromino is touching the bottom of the arena
@@ -283,11 +238,72 @@ export default class TetrisState {
     return false;
   }
 
-  public reset(): void {
-    this.blocks.map(block => block.destroy());
-    this.blocks = [];
+
+  /******************************************************************
+   * Crushing the rows and destructuring tetrominoes.
+   *****************************************************************/
+
+  /** Groups rows of blocks together. */
+  private rows(): Block[][] {
+    return Object.values(groupBy(this.blocks, block => block.yCoord));
   }
 
+  /** Groups columns of blocks together. */
+  private columns(): Block[][] {
+    return Object.values(groupBy(this.blocks, block => block.xCoord));
+  }
+
+  /** Row indices fully covered by blocks. These rows need to be crushed. */
+  private fullRows(): number[] {
+    const rows = this.rows();
+    const rowsToCrush = rows.filter(row => row.length === TETRIS_WIDTH);
+    return uniq(flatten(rowsToCrush).map(block => block.yCoord));
+  }
+
+  /**
+   * Crushes all rows that are full. Does it by finding rows where blocks
+   * cover all X indices, removing them from the list and destroying the
+   * sprites, and drop all blocks above the rows by 1.
+   */
+  public crush(): void {
+    const fullRows = this.fullRows();
+
+    for (const indexToCrush of fullRows.sort()) {
+      // Destroy Blocks that should be crushed
+      this.blocks.filter(block => block.yCoord === indexToCrush)
+        .forEach(block => block.destroy());
+
+      // Remove Blocks that should be crushed
+      this.blocks = this.blocks.filter(block => block.yCoord !== indexToCrush);
+
+      // Drop blocks that are above the crushed row
+      this.blocks.filter(block => block.yCoord < indexToCrush)
+        .forEach(block => {
+          block.yCoord += 1;
+        });
+    }
+  }
+
+  /** Converts a Tetromino into immovable individual blocks. */
+  public destructureTetromino(): void {
+    if (this.canTetrominoDrop()) {
+      throw Error('Tetromino should not be destructured in this position');
+    }
+
+    const coords = this.tetromino.getAllCoords();
+    for (const [xCoord, yCoord] of coords) {
+      this.blocks.push(
+        new Block(this.scene, xCoord, yCoord, this.tetromino.blockTexture)
+      );
+    }
+  }
+
+
+  /******************************************************************
+   * Heuristic
+   *****************************************************************/
+
+  /** An array of the heights of each column */
   private heights(): number[] {
     const heights = Array(TETRIS_WIDTH).fill(0);
     const columns = this.columns();
@@ -298,10 +314,13 @@ export default class TetrisState {
     return heights;
   }
 
+  /** Heuristic: sum of heights of all columns */
   public heightsSum(): number {
     return sum(this.heights());
   }
 
+  // TODO should be private
+  /** Debug function to show the heuristic data on the screen. */
   public debugHeuristic(): void {
     this.debugText.setText(
       'Heights: ' + this.heights().toString()
