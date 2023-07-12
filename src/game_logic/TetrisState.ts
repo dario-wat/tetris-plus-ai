@@ -26,7 +26,8 @@ export default class TetrisState {
    * Initialized tetris state in the scene.
    * 1. Create a new tetromino queue (generator)
    * 2. Creates the first tetromino
-   * 3. Initialized the game over button and state
+   * 3. Initializes the game over button and state
+   * 4. Creates the heuristic debug text
    */
   constructor(public scene: TetrisScene) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
@@ -65,12 +66,23 @@ export default class TetrisState {
     }
   }
 
+
+  /******************************************************************
+   * Following are the tetris state manipulation functions that are
+   * exposed outside (usually means that user has control over them). 
+   * Things like dropping, rotating and moving tetrominoes.
+   *****************************************************************/
+
+  /** 
+   * Makes a step in the tetris game. This usually means dropping the
+   * tetromino and removing full rows if there are any.
+   */
   public makeStep(): void {
     if (this.gameOver) {
       return;
     }
 
-    this.tetromino.drop();
+    this.tetrominoDrop();
     this.crush();
     this.createNewTetromino();
   }
@@ -93,18 +105,34 @@ export default class TetrisState {
     }
   }
 
-  public tetrominoDrop(): void {
-    if (!this.gameOver && this.tetromino.scene) {
+  public tetrominoDrop(): boolean {
+    if (this.gameOver || !this.tetromino.scene) {
+      return false;
+    }
+
+    if (this.canTetrominoDrop()) {
       this.tetromino.drop();
+      return true;
+    } else {
+      this.destructureTetromino();
+      this.tetromino.destroy();
+      return false;
     }
   }
 
   public tetrominoTotalDrop(): void {
     if (!this.gameOver && this.tetromino.scene) {
-      this.tetromino.totalDrop();
+      while (this.tetrominoDrop()) { }
       this.createNewTetromino();
     }
   }
+
+
+
+
+  /******************************************************************
+   * 
+   *****************************************************************/
 
   /** Groups rows of blocks together. */
   private rows(): Block[][] {
@@ -148,19 +176,30 @@ export default class TetrisState {
   }
 
   /** Converts a Tetromino into immovable individual blocks. */
-  public destructureTetromino(tetromino: Tetromino): void {
+  public destructureTetromino(): void {
     // TODO only allowed when touching the top of the stack
-    const coords = tetromino.getAllCoords();
+    const coords = this.tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
       this.blocks.push(
-        new Block(this.scene, xCoord, yCoord, tetromino.blockTexture)
+        new Block(this.scene, xCoord, yCoord, this.tetromino.blockTexture)
       );
     }
   }
 
-  // TODO this should check for bottom of arena or block stack
-  public isTetrominoAtTheBottom(tetromino: Tetromino): boolean {
-    const coords = tetromino.getAllCoords();
+  /** 
+   * Checks whether the tetromino is touching the bottom of the arena
+   * or the top of the tetromino stack.
+   */
+  private canTetrominoDrop(): boolean {
+    return !this.isTetrominoAtTheBottom() && !this.isTetrominoOnTheStack();
+  }
+
+  /** 
+   * Checks whether the tetromino is on top of the stack, meaning, it's
+   * touching the existing blocks and can't move further down.
+   */
+  private isTetrominoOnTheStack(): boolean {
+    const coords = this.tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
       const atTheBottom = this.blocks.some(block =>
         xCoord === block.xCoord && yCoord + 1 === block.yCoord
@@ -170,6 +209,12 @@ export default class TetrisState {
       }
     }
     return false;
+  }
+
+  /** Checks whether the tetromino is touching the bottom border. */
+  private isTetrominoAtTheBottom(): boolean {
+    const coords = this.tetromino.getAllCoords();
+    return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1);
   }
 
   public isOverlapping(tetromino: Tetromino): boolean {

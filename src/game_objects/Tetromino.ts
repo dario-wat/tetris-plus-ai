@@ -123,29 +123,8 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   /** Drops the tetromino by one and return true if it got dropped. */
-  public drop(): boolean {
-    if (this.isAtBottom()) {
-      this.scene?.tetrisState.destructureTetromino(this);
-      this.destroy();
-      return false;
-    }
+  public drop(): void {
     this.yCoord += 1;
-    return true;
-  }
-
-  /** Drops to the bottom. */
-  public totalDrop(): void {
-    while (this.drop()) { }
-  }
-
-  /** 
-   * Checks whether the tetromino is touching the bottom of the arena
-   * or the top of the tetromino tower.
-   */
-  private isAtBottom(): boolean {
-    const coords = this.getAllCoords();
-    return coords.some(([_, yCoord]) => yCoord === TETRIS_HEIGHT - 1)
-      || this.scene?.tetrisState.isTetrominoAtTheBottom(this);
   }
 
   /** Gets coordinates of all individual blocks of a tetromino. */
