@@ -3,6 +3,8 @@ import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
 import { DEBUG_TEXT_X, DEBUG_TEXT_Y, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
+import TetrominoGenerator from "./TetrominoGenerator";
+import GameOverButton from "../game_objects/GameOverButton";
 
 /**
  * Represents an individual immovable block that is created once the
@@ -13,8 +15,31 @@ export default class TetrisState {
   private debugText: Phaser.GameObjects.Text;
 
   private blocks: Block[] = [];
+  private tetromino: Tetromino;
+  private gameOverButton: GameOverButton; // TODO maybe should be outside
+  private gameOver: boolean = false;
 
+  // TODO should be private
+  public tetrominoGenerator: TetrominoGenerator;
+
+  /**
+   * Initialized tetris state in the scene.
+   * 1. Create a new tetromino queue (generator)
+   * 2. Creates the first tetromino
+   * 3. Initialized the game over button and state
+   */
   constructor(public scene: TetrisScene) {
+    this.tetrominoGenerator = new TetrominoGenerator(scene);
+    this.tetromino = this.tetrominoGenerator.create();
+
+    this.gameOverButton = new GameOverButton(scene, () => {
+      this.tetrominoGenerator.reset();
+      this.reset();
+      this.gameOver = false;
+      this.tetromino.destroy();
+      this.createNewTetromino();
+    });
+
     this.debugText = this.scene.add.text(
       DEBUG_TEXT_X,
       DEBUG_TEXT_Y,
@@ -25,6 +50,60 @@ export default class TetrisState {
         color: '#FFFFFF' // White color
       }
     );
+  }
+
+  // This is not ideal since it's used in many places and ideally it should
+  // be used in only one place. But it works
+  private createNewTetromino(): void {
+    if (!this.tetromino.scene) {
+      this.tetromino = this.tetrominoGenerator.create();
+
+      // Game Over logic
+      if (this.isOverlapping(this.tetromino)) {
+        this.gameOver = true;
+      }
+    }
+  }
+
+  public makeStep(): void {
+    if (this.gameOver) {
+      return;
+    }
+
+    this.tetromino.drop();
+    this.crush();
+    this.createNewTetromino();
+  }
+
+  public tetrominoRotate(): void {
+    if (!this.gameOver) {
+      this.tetromino.rotate();
+    }
+  }
+
+  public tetrominoMoveRight(): void {
+    if (!this.gameOver) {
+      this.tetromino.moveRight();
+    }
+  }
+
+  public tetrominoMoveLeft(): void {
+    if (!this.gameOver) {
+      this.tetromino.moveLeft();
+    }
+  }
+
+  public tetrominoDrop(): void {
+    if (!this.gameOver && this.tetromino.scene) {
+      this.tetromino.drop();
+    }
+  }
+
+  public tetrominoTotalDrop(): void {
+    if (!this.gameOver && this.tetromino.scene) {
+      this.tetromino.totalDrop();
+      this.createNewTetromino();
+    }
   }
 
   /** Groups rows of blocks together. */

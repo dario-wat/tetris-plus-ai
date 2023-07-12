@@ -27,12 +27,8 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
   private debugGraphics: Phaser.GameObjects.Graphics;
 
-  public tetrominoGenerator: TetrominoGenerator;
   public tetrisState: TetrisState;
 
-  private tetromino: Tetromino;
-  private gameOverButton: GameOverButton;
-  private gameOver: boolean = false;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -49,42 +45,22 @@ export class TetrisScene extends Phaser.Scene {
 
     this.tetrisState = new TetrisState(this);
     new TetrisArena(this);
-    this.tetrominoGenerator = new TetrominoGenerator(this);
-    this.tetromino = this.tetrominoGenerator.create();
     new NextTetromino(this);
-    this.gameOverButton = new GameOverButton(this, () => {
-      this.tetrominoGenerator.reset();
-      this.tetrisState.reset();
-      this.gameOver = false;
-      this.tetromino.destroy();
-      this.createNewTetromino();
-    });
 
     this.keys.w.on('down', () => {
-      if (!this.gameOver) {
-        this.tetromino.rotate();
-      }
+      this.tetrisState.tetrominoRotate();
     });
     this.keys.d.on('down', () => {
-      if (!this.gameOver) {
-        this.tetromino.moveRight();
-      }
+      this.tetrisState.tetrominoMoveRight();
     });
     this.keys.a.on('down', () => {
-      if (!this.gameOver) {
-        this.tetromino.moveLeft();
-      }
+      this.tetrisState.tetrominoMoveLeft();
     });
     this.keys.s.on('down', () => {
-      if (!this.gameOver && this.tetromino.scene) {
-        this.tetromino.drop();
-      }
+      this.tetrisState.tetrominoDrop();
     });
     this.keys.space.on('down', () => {
-      if (!this.gameOver && this.tetromino.scene) {
-        this.tetromino.totalDrop();
-        this.createNewTetromino();
-      }
+      this.tetrisState.tetrominoTotalDrop();
     });
 
     this.time.addEvent({
@@ -95,33 +71,15 @@ export class TetrisScene extends Phaser.Scene {
     });
   }
 
-  // This is not ideal since it's used in many places and ideally it should
-  // be used in only one place. But it works
-  private createNewTetromino(): void {
-    if (!this.tetromino.scene) {
-      this.tetromino = this.tetrominoGenerator.create();
-
-      // Game Over logic
-      if (this.tetrisState.isOverlapping(this.tetromino)) {
-        this.gameOver = true;
-      }
-    }
-  }
-
   makeStep(): void {
-    if (this.gameOver) {
-      return;
-    }
-
-    this.tetromino.drop();
-    this.tetrisState.crush();
-    this.createNewTetromino();
+    this.tetrisState.makeStep();
   }
 
   update(): void {
     this.debugGraphics.clear();
-    this.gameOverButton.setVisible(this.gameOver);
-    debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
+    // TODO fix game over button visibility
+    // this.gameOverButton.setVisible(this.gameOver);
+    // debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
     this.tetrisState.debugHeuristic();
   }
 }

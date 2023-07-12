@@ -29,7 +29,7 @@ export default class NextTetromino extends Phaser.GameObjects.Sprite {
 
     this.scene.events.on('update', () => {
       // TODO do it like this?
-      const next = this.getNextTetrominoTexture(scene.tetrominoGenerator.next());
+      const next = this.getNextTetrominoTexture(scene.tetrisState.tetrominoGenerator.next());
       this.setRotation(0);
       if (next === I_TEXTURE) {
         this.setRotation(Math.PI / 2);
