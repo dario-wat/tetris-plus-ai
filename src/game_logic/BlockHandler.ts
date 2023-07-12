@@ -4,6 +4,9 @@ import { Tetromino } from "../game_objects/Tetromino";
 import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 
+const DEBUG_TEXT_X = 700;
+const DEBUG_TEXT_Y = 300;
+
 /**
  * Represents an individual immovable block that is created once the
  * tetromino hits the bottom.
@@ -16,26 +19,32 @@ export default class BlockHandler {
 
   constructor(public scene: TetrisScene) {
     this.debugText = this.scene.add.text(
-      100,
-      100,
+      DEBUG_TEXT_X,
+      DEBUG_TEXT_Y,
       '',
       {
         fontFamily: 'Arial',
-        fontSize: '12px',
+        fontSize: '14px',
         color: '#FFFFFF' // White color
       }
     );
   }
 
-  /** Converts a Tetromino into immovable individual blocks. */
-  public destructureTetromino(tetromino: Tetromino): void {
-    // TODO only allowed when touching the top of the stack
-    const coords = tetromino.getAllCoords();
-    for (const [xCoord, yCoord] of coords) {
-      this.blocks.push(
-        new Block(this.scene, xCoord, yCoord, tetromino.blockTexture)
-      );
-    }
+  /** Groups rows of blocks together. */
+  private rows(): Block[][] {
+    return Object.values(groupBy(this.blocks, block => block.yCoord));
+  }
+
+  /** Groups columns of blocks together. */
+  private columns(): Block[][] {
+    return Object.values(groupBy(this.blocks, block => block.xCoord));
+  }
+
+  /** Row indices fully covered by blocks. These rows need to be crushed. */
+  private fullRows(): number[] {
+    const rows = this.rows();
+    const rowsToCrush = rows.filter(row => row.length === TETRIS_WIDTH);
+    return uniq(flatten(rowsToCrush).map(block => block.yCoord));
   }
 
   /**
@@ -44,15 +53,9 @@ export default class BlockHandler {
    * sprites, and drop all blocks above the rows by 1.
    */
   public crush(): void {
-    const rows = Object.values(groupBy(this.blocks, block => block.yCoord));
+    const fullRows = this.fullRows();
 
-    // Blocks cover all X indices (entire row)
-    const rowsToCrush = rows.filter(row => row.length === TETRIS_WIDTH);
-    const rowIndicesToCrush = uniq(
-      flatten(rowsToCrush).map(block => block.yCoord)
-    );
-
-    for (const indexToCrush of rowIndicesToCrush.sort()) {
+    for (const indexToCrush of fullRows.sort()) {
       // Destroy Blocks that should be crushed
       this.blocks.filter(block => block.yCoord === indexToCrush)
         .forEach(block => block.destroy());
@@ -68,6 +71,18 @@ export default class BlockHandler {
     }
   }
 
+  /** Converts a Tetromino into immovable individual blocks. */
+  public destructureTetromino(tetromino: Tetromino): void {
+    // TODO only allowed when touching the top of the stack
+    const coords = tetromino.getAllCoords();
+    for (const [xCoord, yCoord] of coords) {
+      this.blocks.push(
+        new Block(this.scene, xCoord, yCoord, tetromino.blockTexture)
+      );
+    }
+  }
+
+  // TODO this should check for bottom of arena or block stack
   public isTetrominoAtTheBottom(tetromino: Tetromino): boolean {
     const coords = tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
@@ -101,7 +116,7 @@ export default class BlockHandler {
 
   private heights(): number[] {
     const heights = Array(TETRIS_WIDTH).fill(0);
-    const columns = Object.values(groupBy(this.blocks, block => block.xCoord));
+    const columns = this.columns();
     columns.forEach(column => {
       const height = min(column.map(block => block.yCoord));
       heights[column[0].xCoord] = TETRIS_HEIGHT - height;

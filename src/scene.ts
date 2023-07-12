@@ -13,6 +13,7 @@ import NextTetromino from './game_objects/NextTetromino';
 // TODO score & speed
 // TODO finish ghost tetromino
 // TODO heuristic
+// TODO make blockhandler the game state
 
 const DELAY_MS = 400;
 
