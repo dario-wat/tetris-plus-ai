@@ -1,11 +1,8 @@
 import { flatten, groupBy, max, min, range, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { DEBUG_TEXT_X, DEBUG_TEXT_Y, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
-
-const DEBUG_TEXT_X = 700;
-const DEBUG_TEXT_Y = 300;
 
 /**
  * Represents an individual immovable block that is created once the

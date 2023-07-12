@@ -3,6 +3,7 @@ import { ox, oy } from "../lib/grid";
 import { TetrisScene } from "../scene";
 import { BORDER } from "../lib/textures";
 
+/** Borders of the tetris board. */
 export default class TetrisArena {
 
   private walls: Phaser.GameObjects.TileSprite[];
@@ -40,6 +41,7 @@ export default class TetrisArena {
   }
 }
 
+/** Individual walls of the tetris board. */
 class TetrisArenaWall extends Phaser.GameObjects.TileSprite {
 
   constructor(

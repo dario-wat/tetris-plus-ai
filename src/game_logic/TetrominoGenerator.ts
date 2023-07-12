@@ -6,9 +6,8 @@ import { TetrominoEnum } from "../lib/tetromino_enum";
 export default class TetrominoGenerator {
 
   private queue: TetrominoEnum[] = [];
-  public next: TetrominoEnum;
 
-  constructor(public scene: TetrisScene) { }
+  constructor(private scene: TetrisScene) { }
 
   /** Creates a new tetromino in the scene. */
   public create(): Tetromino {
@@ -17,7 +16,6 @@ export default class TetrominoGenerator {
     }
 
     const tetromino = this.queue.shift();
-    this.next = this.queue[0];
     return this.createTetromino(tetromino);
   }
 
@@ -38,6 +36,11 @@ export default class TetrominoGenerator {
       case TetrominoEnum.Z:
         return new Z(this.scene);
     }
+  }
+
+  /** Next tetromino in the queue. */
+  public next(): TetrominoEnum {
+    return this.queue[0];
   }
 
   public reset(): void {

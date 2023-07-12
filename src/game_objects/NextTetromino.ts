@@ -3,7 +3,10 @@ import { TetrisScene } from "../scene";
 import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
 import { TetrominoEnum } from "../lib/tetromino_enum";
 
-/** Shows what the next Tetromino is in the sequence. */
+/** 
+ * Shows what the next Tetromino is in the sequence. 
+ * This is not a real tetromino component, but just a texture.
+ */
 export default class NextTetromino extends Phaser.GameObjects.Sprite {
 
   constructor(scene: TetrisScene) {
@@ -25,7 +28,8 @@ export default class NextTetromino extends Phaser.GameObjects.Sprite {
     this.setScale(SCALE);
 
     this.scene.events.on('update', () => {
-      const next = this.getNextTetrominoTexture(scene.tetrominoGenerator.next);
+      // TODO do it like this?
+      const next = this.getNextTetrominoTexture(scene.tetrominoGenerator.next());
       this.setRotation(0);
       if (next === I_TEXTURE) {
         this.setRotation(Math.PI / 2);

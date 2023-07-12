@@ -14,6 +14,11 @@ import NextTetromino from './game_objects/NextTetromino';
 // TODO finish ghost tetromino
 // TODO heuristic
 // TODO make blockhandler the game state
+// To clean up:
+// - NextTetromino
+// - Tetromino
+// - BlockHandler
+// TODO add config
 
 const DELAY_MS = 400;
 
