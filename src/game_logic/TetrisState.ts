@@ -319,17 +319,37 @@ export default class TetrisState {
     return heights;
   }
 
-  /** Heuristic: sum of heights of all columns */
+  /** Heuristic: sum of heights of all columns. */
   public heightsSum(): number {
     return sum(this.heights());
   }
 
-  // TODO should be private
+  /** Heuristic: sum of differences of heights between adjacent columns. */
+  public heightsDifferenceSum(): number {
+    const heights = this.heights();
+    return sum(
+      heights.slice(1).map((height, i) => Math.abs(height - heights[i]))
+    );
+  }
+
+  /**
+   * Heuristic: number of holes in the stack. A hole is defined as a
+   * grid cell without a tetris block that has a tetris block anywhere
+   * above it in the stack.
+   */
+  public holeCount(): number {
+    const holesPerColumn = this.columns().map(column =>
+      TETRIS_HEIGHT - min(column.map(block => block.yCoord)) - column.length
+    );
+    return sum(holesPerColumn);
+  }
+
   /** Debug function to show the heuristic data on the screen. */
   public debugHeuristic(): void {
     this.debugText.setText(
-      'Heights: ' + this.heights().toString()
-      + '\nHeight sum: ' + this.heightsSum()
+      'Height sum: ' + this.heightsSum()
+      + '\nHeight diff sum: ' + this.heightsDifferenceSum()
+      + '\nHole count: ' + this.holeCount()
     );
   }
 }
