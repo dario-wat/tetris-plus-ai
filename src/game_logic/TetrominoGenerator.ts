@@ -5,9 +5,11 @@ import { TetrominoEnum } from "../lib/tetromino_enum";
 
 export default class TetrominoGenerator {
 
-  private queue: TetrominoEnum[] = [];
+  private queue: TetrominoEnum[];
 
-  constructor(private scene: TetrisScene) { }
+  constructor(private scene: TetrisScene) {
+    this.queue = newShuffledQueue();
+  }
 
   /** Creates a new tetromino in the scene. */
   public create(): Tetromino {

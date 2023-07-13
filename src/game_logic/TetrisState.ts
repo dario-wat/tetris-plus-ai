@@ -5,6 +5,7 @@ import { DEBUG_TEXT_X, DEBUG_TEXT_Y, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import GameOverButton from "../game_objects/GameOverButton";
+import { TetrominoEnum } from "../lib/tetromino_enum";
 
 /**
  * Represents an individual immovable block that is created once the
@@ -14,13 +15,13 @@ export default class TetrisState {
 
   private debugText: Phaser.GameObjects.Text;
 
+  private gameOverButton: GameOverButton; // TODO maybe should be outside
+
   private blocks: Block[] = [];
   private tetromino: Tetromino;
-  private gameOverButton: GameOverButton; // TODO maybe should be outside
   private gameOver: boolean = false;
 
-  // TODO should be private
-  public tetrominoGenerator: TetrominoGenerator;
+  private tetrominoGenerator: TetrominoGenerator;
 
   /**
    * Initialized tetris state in the scene.
@@ -166,6 +167,10 @@ export default class TetrisState {
       while (this.tetrominoDrop()) { }
       this.createNewTetromino();
     }
+  }
+
+  public nextTetromino(): TetrominoEnum {
+    return this.tetrominoGenerator.next();
   }
 
 
