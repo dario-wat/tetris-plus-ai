@@ -1,7 +1,7 @@
 import { flatten, groupBy, min, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED, NEXT_TETROMINO_UPDATED, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, NEXT_TETROMINO_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { TetrominoEnum } from "../lib/tetromino_enum";
@@ -41,7 +41,7 @@ export default class TetrisState {
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
       this.scene.events.emit(
-        NEXT_TETROMINO_UPDATED,
+        NEXT_TETROMINO_UPDATED_EVENT,
         this.tetrominoGenerator.next(),
       );
 
@@ -333,7 +333,7 @@ export default class TetrisState {
   /** Used for the heuristic debug text */
   private emitHeuristicTextUpdated(): void {
     this.scene.events.emit(
-      HEURISTIC_TEXT_UPDATED,
+      HEURISTIC_TEXT_UPDATED_EVENT,
       'Height sum: ' + this.heightsSum()
       + '\nHeight diff sum: ' + this.heightsDifferenceSum()
       + '\nHole count: ' + this.holeCount(),
