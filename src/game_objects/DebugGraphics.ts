@@ -1,7 +1,7 @@
 import { DEBUG_GRAPHICS_DEPTH, DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT } from "../lib/consts";
 import { debugPoint } from "../lib/debug";
 import { TetrisScene } from "../scene";
-import { Coord } from "./Tetromino";
+import { Coord } from "../types";
 
 export default class DebugGraphics extends Phaser.GameObjects.Graphics {
 

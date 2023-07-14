@@ -14,7 +14,7 @@ import DebugGraphics from './game_objects/DebugGraphics';
 // TODO heuristic
 // TODO add config
 // TODO remove scene from non objects
-// TODO separate logic classes from rendering classes
+// TODO separate logic classes from rendering classes (tetromino and blocks)
 
 const DELAY_MS = 400;
 

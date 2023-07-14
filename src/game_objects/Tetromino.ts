@@ -3,9 +3,9 @@ import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
 import { DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT, SCALE } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
+import { Coord } from '../types';
 
 type RotationSize = [number, number]
-export type Coord = [number, number];
 
 /**
  * Abstract class for a tetromino containing most of the movement logic.
