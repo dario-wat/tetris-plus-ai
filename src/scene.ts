@@ -45,7 +45,11 @@ export class TetrisScene extends Phaser.Scene {
       this,
       DEBUG_TEXT_X,
       DEBUG_TEXT_Y,
-      DEBUG_TEXT_FONT_SIZE,
+      {
+        fontFamily: 'Arial',
+        fontSize: '14px',
+        color: '#FFFFFF' // White color
+      },
       HEURISTIC_TEXT_UPDATED_EVENT,
     );
 
