@@ -24,3 +24,4 @@ export const GAME_OVER_BUTTON_DEPTH = 1;
 // Events
 export const ON_GAME_OVER_BUTTON_CLICK_EVENT = 'onGameOverButtonClick';
 export const GAME_OVER_EVENT = 'gameOver';
+export const NEXT_TETROMINO_UPDATED = 'nextTetrominoUpdated';

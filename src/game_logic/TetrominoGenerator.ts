@@ -7,6 +7,7 @@ export default class TetrominoGenerator {
 
   private queue: TetrominoEnum[];
 
+  // TODO maybe should not have a scene input
   constructor(private scene: TetrisScene) {
     this.queue = newShuffledQueue();
   }

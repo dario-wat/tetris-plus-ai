@@ -1,7 +1,7 @@
 import { flatten, groupBy, min, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, NEXT_TETROMINO_UPDATED, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { TetrominoEnum } from "../lib/tetromino_enum";
@@ -54,6 +54,10 @@ export default class TetrisState {
   private createNewTetromino(): void {
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
+      this.scene.events.emit(
+        NEXT_TETROMINO_UPDATED,
+        this.tetrominoGenerator.next(),
+      );
 
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
@@ -169,10 +173,6 @@ export default class TetrisState {
       while (this.tetrominoDrop()) { }
       this.createNewTetromino();
     }
-  }
-
-  public nextTetromino(): TetrominoEnum {
-    return this.tetrominoGenerator.next();
   }
 
 

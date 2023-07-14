@@ -10,9 +10,8 @@ import GameOverButton from './game_objects/GameOverButton';
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO heuristic
-// To clean up:
-// - NextTetromino
 // TODO add config
+// TODO remove scene from non objects
 
 const DELAY_MS = 400;
 
@@ -21,8 +20,8 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
   private debugGraphics: Phaser.GameObjects.Graphics;
 
+  // TODO should be private
   public tetrisState: TetrisState;
-
 
   constructor() {
     super({ key: 'TetrisScene' })
