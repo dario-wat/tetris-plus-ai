@@ -4,7 +4,6 @@ import { Tetromino } from "../game_objects/Tetromino";
 import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, NEXT_TETROMINO_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
-import { TetrominoEnum } from "../lib/tetromino_enum";
 
 /**
  * Represents an individual immovable block that is created once the
@@ -25,7 +24,9 @@ export default class TetrisState {
    * 4. Creates the heuristic debug text
    */
   constructor(
-    private scene: TetrisScene,  // TODO should be private or not here at all
+    // TODO should be private or not here at all
+    // or use only for events
+    private scene: TetrisScene,
   ) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();

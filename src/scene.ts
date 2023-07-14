@@ -21,8 +21,7 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
   private debugGraphics: Phaser.GameObjects.Graphics;
 
-  // TODO should be private
-  public tetrisState: TetrisState;
+  private tetrisState: TetrisState;
 
   constructor() {
     super({ key: 'TetrisScene' })
