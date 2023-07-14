@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import { TetrisScene } from "../scene";
-import { CELL_SIZE, GAME_OVER_BUTTON_DEPTH, TETRIS_HEIGHT, TETRIS_WIDTH, X_ORIGIN, Y_ORIGIN } from "../lib/consts";
+import { CELL_SIZE, GAME_OVER_BUTTON_DEPTH, GAME_OVER_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH, X_ORIGIN, Y_ORIGIN } from "../lib/consts";
 
 const buttonWidth = 200;
 const buttonHeight = 50;
@@ -16,7 +16,7 @@ export default class GameOverButton {
   private buttonGraphics: Phaser.GameObjects.Graphics;
   private buttonContainer: Phaser.GameObjects.Container;
 
-  constructor(scene: TetrisScene, onClick: () => void) {
+  constructor(private scene: TetrisScene) {
     this.buttonGraphics = scene.add.graphics();
 
     this.drawButton(defaultColor);
@@ -43,7 +43,8 @@ export default class GameOverButton {
     this.buttonGraphics.on('pointerup', () => {
       this.buttonGraphics.clear();
       this.drawButton(defaultColor);
-      onClick();
+
+      this.scene.events.emit(ON_GAME_OVER_BUTTON_CLICK_EVENT);
     });
 
     const buttonText = scene.add.text(
@@ -63,6 +64,10 @@ export default class GameOverButton {
     this.buttonContainer = scene.add.container(x, y, [this.buttonGraphics, buttonText]);
     this.buttonContainer.depth = GAME_OVER_BUTTON_DEPTH;
     this.setVisible(false);
+
+    scene.events.on(GAME_OVER_EVENT, (gameOver: boolean) =>
+      this.setVisible(gameOver)
+    );
   }
 
   private drawButton(fillColor: number): void {

@@ -20,3 +20,7 @@ export const DEBUG_TEXT_Y = 300;
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;
 export const GAME_OVER_BUTTON_DEPTH = 1;
+
+// Events
+export const ON_GAME_OVER_BUTTON_CLICK_EVENT = 'onGameOverButtonClick';
+export const GAME_OVER_EVENT = 'gameOver';

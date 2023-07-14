@@ -5,13 +5,13 @@ import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './game_objects/NextTetromino';
 import { DEBUG_GRAPHICS_DEPTH } from './lib/consts';
+import GameOverButton from './game_objects/GameOverButton';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO heuristic
 // To clean up:
 // - NextTetromino
-// - TetrisState
 // TODO add config
 
 const DELAY_MS = 400;
@@ -40,6 +40,7 @@ export class TetrisScene extends Phaser.Scene {
     this.tetrisState = new TetrisState(this);
     new TetrisArena(this);
     new NextTetromino(this);
+    new GameOverButton(this);
 
     this.keys.w.on('down', () => {
       this.tetrisState.tetrominoRotate();
@@ -71,8 +72,6 @@ export class TetrisScene extends Phaser.Scene {
 
   update(): void {
     this.debugGraphics.clear();
-    // TODO fix game over button visibility
-    // this.gameOverButton.setVisible(this.gameOver);
     // debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
     this.tetrisState.debugHeuristic();
   }

@@ -1,10 +1,9 @@
 import { flatten, groupBy, min, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { DEBUG_TEXT_X, DEBUG_TEXT_Y, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
-import GameOverButton from "../game_objects/GameOverButton";
 import { TetrominoEnum } from "../lib/tetromino_enum";
 
 /**
@@ -14,8 +13,6 @@ import { TetrominoEnum } from "../lib/tetromino_enum";
 export default class TetrisState {
 
   private debugText: Phaser.GameObjects.Text;
-
-  private gameOverButton: GameOverButton; // TODO maybe should be outside
 
   private blocks: Block[] = [];
   private tetromino: Tetromino;
@@ -27,20 +24,14 @@ export default class TetrisState {
    * Initialized tetris state in the scene.
    * 1. Create a new tetromino queue (generator)
    * 2. Creates the first tetromino
-   * 3. Initializes the game over button and state
+   * 3. Initializes the game over state
    * 4. Creates the heuristic debug text
    */
-  constructor(public scene: TetrisScene) {
+  constructor(
+    public scene: TetrisScene,  // TODO should be private or not here at all
+  ) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();
-
-    this.gameOverButton = new GameOverButton(scene, () => {
-      this.tetrominoGenerator.reset();
-      this.reset();
-      this.gameOver = false;
-      this.tetromino.destroy();
-      this.createNewTetromino();
-    });
 
     this.debugText = this.scene.add.text(
       DEBUG_TEXT_X,
@@ -52,6 +43,9 @@ export default class TetrisState {
         color: '#FFFFFF' // White color
       }
     );
+
+    // TODO test this
+    this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
   }
 
   // This is not ideal since it's used in many places and ideally it should
@@ -64,6 +58,7 @@ export default class TetrisState {
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
+        this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
       }
     }
   }
@@ -94,6 +89,13 @@ export default class TetrisState {
   public reset(): void {
     this.blocks.map(block => block.destroy());
     this.blocks = [];
+    this.tetrominoGenerator.reset();
+
+    this.tetromino.destroy();
+    this.createNewTetromino();
+
+    this.gameOver = false;
+    this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
   }
 
   /** 
