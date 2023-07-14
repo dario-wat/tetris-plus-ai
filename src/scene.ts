@@ -4,8 +4,9 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './game_objects/NextTetromino';
-import { DEBUG_GRAPHICS_DEPTH } from './lib/consts';
+import { DEBUG_GRAPHICS_DEPTH, DEBUG_TEXT_FONT_SIZE, DEBUG_TEXT_X, DEBUG_TEXT_Y } from './lib/consts';
 import GameOverButton from './game_objects/GameOverButton';
+import Text from './game_objects/Text';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
@@ -40,6 +41,7 @@ export class TetrisScene extends Phaser.Scene {
     new TetrisArena(this);
     new NextTetromino(this);
     new GameOverButton(this);
+    new Text(this, DEBUG_TEXT_X, DEBUG_TEXT_Y, DEBUG_TEXT_FONT_SIZE);
 
     this.keys.w.on('down', () => {
       this.tetrisState.tetrominoRotate();
@@ -72,6 +74,5 @@ export class TetrisScene extends Phaser.Scene {
   update(): void {
     this.debugGraphics.clear();
     // debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
-    this.tetrisState.debugHeuristic();
   }
 }

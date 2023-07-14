@@ -16,6 +16,7 @@ export const NEXT_TETROMINO_Y = 200;
 // Position of the heuristic debug text
 export const DEBUG_TEXT_X = 700;
 export const DEBUG_TEXT_Y = 300;
+export const DEBUG_TEXT_FONT_SIZE = 14;
 
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;
@@ -25,3 +26,4 @@ export const GAME_OVER_BUTTON_DEPTH = 1;
 export const ON_GAME_OVER_BUTTON_CLICK_EVENT = 'onGameOverButtonClick';
 export const GAME_OVER_EVENT = 'gameOver';
 export const NEXT_TETROMINO_UPDATED = 'nextTetrominoUpdated';
+export const HEURISTIC_TEXT_UPDATED = 'heuristicTextUpdated';

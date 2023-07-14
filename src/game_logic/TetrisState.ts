@@ -1,7 +1,7 @@
 import { flatten, groupBy, min, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
-import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, NEXT_TETROMINO_UPDATED, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { DEBUG_TEXT_X, DEBUG_TEXT_Y, GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED, NEXT_TETROMINO_UPDATED, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { TetrominoEnum } from "../lib/tetromino_enum";
@@ -12,12 +12,9 @@ import { TetrominoEnum } from "../lib/tetromino_enum";
  */
 export default class TetrisState {
 
-  private debugText: Phaser.GameObjects.Text;
-
   private blocks: Block[] = [];
   private tetromino: Tetromino;
   private gameOver: boolean = false;
-
   private tetrominoGenerator: TetrominoGenerator;
 
   /**
@@ -28,24 +25,13 @@ export default class TetrisState {
    * 4. Creates the heuristic debug text
    */
   constructor(
-    public scene: TetrisScene,  // TODO should be private or not here at all
+    private scene: TetrisScene,  // TODO should be private or not here at all
   ) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();
 
-    this.debugText = this.scene.add.text(
-      DEBUG_TEXT_X,
-      DEBUG_TEXT_Y,
-      '',
-      {
-        fontFamily: 'Arial',
-        fontSize: '14px',
-        color: '#FFFFFF' // White color
-      }
-    );
-
-    // TODO test this
     this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
+    this.scene.events.on('update', () => this.emitHeuristicTextUpdated());
   }
 
   // This is not ideal since it's used in many places and ideally it should
@@ -88,9 +74,7 @@ export default class TetrisState {
     this.createNewTetromino();
   }
 
-  // TODO should include resetting other stuff from game over button
-  // TODO maybe private?
-  public reset(): void {
+  private reset(): void {
     this.blocks.map(block => block.destroy());
     this.blocks = [];
     this.tetrominoGenerator.reset();
@@ -322,12 +306,12 @@ export default class TetrisState {
   }
 
   /** Heuristic: sum of heights of all columns. */
-  public heightsSum(): number {
+  private heightsSum(): number {
     return sum(this.heights());
   }
 
   /** Heuristic: sum of differences of heights between adjacent columns. */
-  public heightsDifferenceSum(): number {
+  private heightsDifferenceSum(): number {
     const heights = this.heights();
     return sum(
       heights.slice(1).map((height, i) => Math.abs(height - heights[i]))
@@ -339,19 +323,20 @@ export default class TetrisState {
    * grid cell without a tetris block that has a tetris block anywhere
    * above it in the stack.
    */
-  public holeCount(): number {
+  private holeCount(): number {
     const holesPerColumn = this.columns().map(column =>
       TETRIS_HEIGHT - min(column.map(block => block.yCoord)) - column.length
     );
     return sum(holesPerColumn);
   }
 
-  /** Debug function to show the heuristic data on the screen. */
-  public debugHeuristic(): void {
-    this.debugText.setText(
+  /** Used for the heuristic debug text */
+  private emitHeuristicTextUpdated(): void {
+    this.scene.events.emit(
+      HEURISTIC_TEXT_UPDATED,
       'Height sum: ' + this.heightsSum()
       + '\nHeight diff sum: ' + this.heightsDifferenceSum()
-      + '\nHole count: ' + this.holeCount()
+      + '\nHole count: ' + this.holeCount(),
     );
   }
 }
