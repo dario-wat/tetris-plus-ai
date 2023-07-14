@@ -7,19 +7,20 @@ import NextTetromino from './game_objects/NextTetromino';
 import { DEBUG_GRAPHICS_DEPTH, DEBUG_TEXT_FONT_SIZE, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
 import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
+import DebugGraphics from './game_objects/DebugGraphics';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO heuristic
 // TODO add config
 // TODO remove scene from non objects
+// TODO separate logic classes from rendering classes
 
 const DELAY_MS = 400;
 
 export class TetrisScene extends Phaser.Scene {
 
   private keys: KeyboardInput;
-  private debugGraphics: Phaser.GameObjects.Graphics;
 
   private tetrisState: TetrisState;
 
@@ -33,8 +34,6 @@ export class TetrisScene extends Phaser.Scene {
 
   create(): void {
     this.keys = new KeyboardInput(this);
-    this.debugGraphics = this.add.graphics();
-    this.debugGraphics.depth = DEBUG_GRAPHICS_DEPTH;
 
     this.tetrisState = new TetrisState(this);
     new TetrisArena(this);
@@ -51,6 +50,7 @@ export class TetrisScene extends Phaser.Scene {
       },
       HEURISTIC_TEXT_UPDATED_EVENT,
     );
+    new DebugGraphics(this);
 
     this.keys.w.on('down', () => {
       this.tetrisState.tetrominoRotate();
@@ -81,7 +81,6 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   update(): void {
-    this.debugGraphics.clear();
     // debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
   }
 }

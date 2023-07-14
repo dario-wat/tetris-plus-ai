@@ -1,11 +1,11 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
-import { SCALE } from '../lib/consts';
+import { DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT, SCALE } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
 
 type RotationSize = [number, number]
-type Coord = [number, number];
+export type Coord = [number, number];
 
 /**
  * Abstract class for a tetromino containing most of the movement logic.
@@ -39,6 +39,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
     this.scene.events.on('update', () => {
       this.updatePosition();
+
+      this.scene &&
+        this.scene.events.emit(
+          DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
+          this.getCenterPoint(),
+        );
     });
   }
 
@@ -114,7 +120,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
    * This is used only for debugging. It is the same as unlock because all
    * tetrominoes are locked to center by default.
    */
-  public getCenterPoint(): Coord {
+  private getCenterPoint(): Coord {
     const dx = this.rotationCenterOffset[this.currRotation][0];
     const dy = this.rotationCenterOffset[this.currRotation][1];
     return [this.xCoord + dx, this.yCoord + dy];
