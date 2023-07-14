@@ -28,3 +28,6 @@ export const GAME_OVER_EVENT = 'gameOver';
 export const NEXT_TETROMINO_UPDATED_EVENT = 'nextTetrominoUpdated';
 export const HEURISTIC_TEXT_UPDATED_EVENT = 'heuristicTextUpdated';
 export const DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT = 'debugGraphicsTetrominoCenter';
+
+// Config
+export const DEBUG_GRAPHICS_ENABLED = false;

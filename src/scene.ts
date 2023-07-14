@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './game_objects/NextTetromino';
-import { DEBUG_GRAPHICS_DEPTH, DEBUG_TEXT_FONT_SIZE, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
+import { DEBUG_GRAPHICS_DEPTH, DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_FONT_SIZE, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
 import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
 import DebugGraphics from './game_objects/DebugGraphics';
@@ -50,7 +50,7 @@ export class TetrisScene extends Phaser.Scene {
       },
       HEURISTIC_TEXT_UPDATED_EVENT,
     );
-    new DebugGraphics(this);
+    DEBUG_GRAPHICS_ENABLED && new DebugGraphics(this);
 
     this.keys.w.on('down', () => {
       this.tetrisState.tetrominoRotate();
@@ -80,7 +80,5 @@ export class TetrisScene extends Phaser.Scene {
     this.tetrisState.makeStep();
   }
 
-  update(): void {
-    // debugPoint(this.debugGraphics, this.tetromino.getCenterPoint());
-  }
+  update(): void { }
 }
