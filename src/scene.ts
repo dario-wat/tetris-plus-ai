@@ -4,11 +4,12 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './game_objects/NextTetromino';
-import { DEBUG_GRAPHICS_DEPTH, DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_FONT_SIZE, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
 import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
 import DebugGraphics from './game_objects/DebugGraphics';
 
+// TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO remove scene from non objects
@@ -34,6 +35,7 @@ export class TetrisScene extends Phaser.Scene {
     this.keys = new KeyboardInput(this);
 
     this.tetrisState = new TetrisState(this);
+
     new TetrisArena(this);
     new NextTetromino(this);
     new GameOverButton(this);

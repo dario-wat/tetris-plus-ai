@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
-import { DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT, SCALE } from '../lib/consts';
+import { DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT, SCALE, TETRIS_WIDTH } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
-import { Coord } from '../types';
+import { Coord, DropPosition } from '../types';
+import { range, zip } from 'lodash';
 
 type RotationSize = [number, number]
 
@@ -76,14 +77,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
 
   public rotateRight(): void {
     this.updateCurrRotation((this.currRotation + 1) % this.rotations.length);
-    this.setRotation(this.rotation + Math.PI / 2);
   }
 
   public rotateLeft(): void {
     this.updateCurrRotation(
       (this.currRotation + this.rotations.length - 1) % this.rotations.length
     );
-    this.setRotation(this.rotation - Math.PI / 2);
   }
 
   /** 
@@ -92,8 +91,24 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
    */
   private updateCurrRotation(newCurrRotation: number): void {
     this.unlockFromCenter();
+
+    const rotationDx = newCurrRotation > this.currRotation
+      ? newCurrRotation - this.currRotation
+      : - (this.currRotation - newCurrRotation);
     this.currRotation = newCurrRotation;
+    this.setRotation(this.rotation + rotationDx * Math.PI / 2)
+
     this.lockToCenter();
+  }
+
+  /** 
+   * Forces a tetromino into a specific position (and rotation).
+   * This is used for AI.
+   */
+  public forceDropPosition(dropPosition: DropPosition): void {
+    this.updateCurrRotation(dropPosition.rotation);
+    this.xCoord = dropPosition.coord[0];
+    this.yCoord = dropPosition.coord[1];
   }
 
   /**
@@ -132,6 +147,23 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     return currRotationCoords.map(([dx, dy]) =>
       [this.xCoord + dx, this.yCoord + dy]
     );
+  }
+
+  /** 
+   * Gives the list of all positions where we can drop the tetromino.
+   * Think of all the positions at the top of the tetris board with
+   * all possible rotations of the tetromino.
+   * There is a static list for each tetromino.
+   * When the tetrominoes are put into these positions, they need to be
+   * rotated first and then translated.
+   */
+  public enumerateDropPositions(): DropPosition[] {
+    return this.rotations.flatMap((rotationSize, i) => {
+      const width = rotationSize[0];
+      const xCoords = range(TETRIS_WIDTH - width + 1);
+      const yCoords: number[] = Array(xCoords.length).fill(0);
+      return zip(xCoords, yCoords).map(coord => ({ coord, rotation: i }));
+    });
   }
 }
 
