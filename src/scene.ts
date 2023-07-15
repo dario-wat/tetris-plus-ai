@@ -11,8 +11,6 @@ import DebugGraphics from './game_objects/DebugGraphics';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
-// TODO heuristic
-// TODO add config
 // TODO remove scene from non objects
 // TODO separate logic classes from rendering classes (tetromino and blocks)
 

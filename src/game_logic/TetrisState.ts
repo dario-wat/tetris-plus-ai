@@ -16,6 +16,8 @@ export default class TetrisState {
   private gameOver: boolean = false;
   private tetrominoGenerator: TetrominoGenerator;
 
+  private isSandbox: boolean = false;
+
   /**
    * Initialized tetris state in the scene.
    * 1. Create a new tetromino queue (generator)
@@ -24,24 +26,24 @@ export default class TetrisState {
    * 4. Creates the heuristic debug text
    */
   constructor(
-    // TODO should be private or not here at all
-    // or use only for events
     private scene: TetrisScene,
   ) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();
 
     this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
-    this.scene.events.on('update', () => this.emitHeuristicTextUpdated());
+    this.scene.events.on('update', () => {
+      this.isSandbox && this.makeInvisible();
+      this.emitHeuristicTextUpdated();
+    });
   }
 
   // This is not ideal since it's used in many places and ideally it should
   // be used in only one place. But it works
-  // TODO what to do with this
   private createNewTetromino(): void {
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
-      this.scene.events.emit(
+      !this.isSandbox && this.scene.events.emit(
         NEXT_TETROMINO_UPDATED_EVENT,
         this.tetrominoGenerator.next(),
       );
@@ -49,7 +51,8 @@ export default class TetrisState {
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
-        this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
+        !this.isSandbox &&
+          this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
       }
     }
   }
@@ -84,7 +87,8 @@ export default class TetrisState {
     this.createNewTetromino();
 
     this.gameOver = false;
-    this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
+    !this.isSandbox &&
+      this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
   }
 
   /** 
@@ -333,11 +337,23 @@ export default class TetrisState {
 
   /** Used for the heuristic debug text */
   private emitHeuristicTextUpdated(): void {
-    this.scene.events.emit(
+    !this.isSandbox && this.scene.events.emit(
       HEURISTIC_TEXT_UPDATED_EVENT,
       'Height sum: ' + this.heightsSum()
       + '\nHeight diff sum: ' + this.heightsDifferenceSum()
       + '\nHole count: ' + this.holeCount(),
     );
+  }
+
+  /** Turn this state into sandbox mode. Nothing is visible in the scene. */
+  public sandbox(): void {
+    this.makeInvisible();
+    this.isSandbox = true;
+  }
+
+  /** Makes all game objects invisible and thus this state invisible. */
+  private makeInvisible(): void {
+    this.blocks.forEach(block => block.setVisible(false));
+    this.tetromino.setVisible(false);
   }
 }
