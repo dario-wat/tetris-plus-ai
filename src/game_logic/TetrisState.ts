@@ -1,14 +1,11 @@
-import { flatten, groupBy, min, sum, uniq } from "lodash";
+import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
 import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
 import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, NEXT_TETROMINO_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
+import { DropPosition } from "../types";
 
-/**
- * Represents an individual immovable block that is created once the
- * tetromino hits the bottom.
- */
 export default class TetrisState {
 
   private blocks: Block[] = [];
@@ -43,6 +40,7 @@ export default class TetrisState {
   private createNewTetromino(): void {
     if (!this.tetromino.scene) {
       this.tetromino = this.tetrominoGenerator.create();
+
       !this.isSandbox && this.scene.events.emit(
         NEXT_TETROMINO_UPDATED_EVENT,
         this.tetrominoGenerator.next(),
@@ -54,6 +52,11 @@ export default class TetrisState {
         !this.isSandbox &&
           this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
       }
+    }
+
+    if (!this.isSandbox) {
+      const move = this.bestMove();
+      this.tetromino.forceDropPosition(move);
     }
   }
 
@@ -335,6 +338,17 @@ export default class TetrisState {
     return sum(holesPerColumn);
   }
 
+  /** Heuristic score for the current state. */
+  private heuristic(
+    heightsSumFactor: number,
+    heightsDifferenceSumFactor: number,
+    holeCountFactor: number,
+  ): number {
+    return heightsSumFactor * this.heightsSum()
+      + heightsDifferenceSumFactor + this.heightsDifferenceSum()
+      + holeCountFactor * this.holeCount();
+  }
+
   /** Used for the heuristic debug text */
   private emitHeuristicTextUpdated(): void {
     !this.isSandbox && this.scene.events.emit(
@@ -351,9 +365,16 @@ export default class TetrisState {
     this.isSandbox = true;
   }
 
+  /** Makes all game objects invisible and thus this state invisible. */
+  private makeInvisible(): void {
+    this.blocks.forEach(block => block.setVisible(false));
+    this.tetromino.setVisible(false);
+  }
+
   private copy(): TetrisState {
     const tetrisState = new TetrisState(this.scene);
-    tetrisState.blocks = [...this.blocks];
+    tetrisState.blocks = this.blocks.map(block => block.copyInvisible());
+    tetrisState.tetromino.destroy();
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
@@ -361,16 +382,17 @@ export default class TetrisState {
     return tetrisState;
   }
 
-  /** Makes all game objects invisible and thus this state invisible. */
-  private makeInvisible(): void {
-    this.blocks.forEach(block => block.setVisible(false));
-    this.tetromino.setVisible(false);
+  /** What is the best next position to drop this tetromino. */
+  private bestMove(): DropPosition {
+    const heuristicScores = this.tetromino.enumerateDropPositions()
+      .map(dropPosition => {
+        const tetrisState = this.copy();
+        tetrisState.sandbox();
+        tetrisState.tetromino.forceDropPosition(dropPosition);
+        tetrisState.tetrominoTotalDrop();
+        const hScore = tetrisState.heuristic(1, 0, 1);
+        return [dropPosition, hScore] as const;
+      });
+    return minBy(heuristicScores, h => h[1])[0];
   }
-
-  // TODO
-  // private enumerateNextTetrisStates(): TetrisState[] {
-  //   return this.tetromino.enumerateDropPositions(dropPosition => 
-
-  //     );
-  // }
 }

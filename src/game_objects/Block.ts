@@ -7,12 +7,15 @@ import { TetrisScene } from '../scene';
 export default class Block extends Phaser.GameObjects.Sprite {
 
   constructor(
-    scene: TetrisScene,
+    public scene: TetrisScene,
     public xCoord: number,
     public yCoord: number,
-    texture: string,
+    private textureStr: string,
+    isVisible: boolean = true,
   ) {
-    super(scene, cx(xCoord), cy(yCoord), texture);
+    super(scene, cx(xCoord), cy(yCoord), textureStr);
+    this.setVisible(isVisible);
+
     scene.add.existing(this);
 
     this.setScale(SCALE);
@@ -20,5 +23,11 @@ export default class Block extends Phaser.GameObjects.Sprite {
     this.scene.events.on('update', () => {
       this.setPosition(cx(this.xCoord), cy(this.yCoord));
     });
+  }
+
+  public copyInvisible(): Block {
+    const block = new Block(this.scene, this.xCoord, this.yCoord, this.textureStr, false);
+    block.setVisible(false);
+    return block;
   }
 }
