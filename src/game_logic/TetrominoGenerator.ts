@@ -50,6 +50,12 @@ export default class TetrominoGenerator {
   public reset(): void {
     this.queue = [];
   }
+
+  public copy(): TetrominoGenerator {
+    const tetrominoGenerator = new TetrominoGenerator(this.scene);
+    tetrominoGenerator.queue = [...this.queue];
+    return tetrominoGenerator;
+  }
 }
 
 /** Creates shuffled indices for 7 unique tetrominoes. */

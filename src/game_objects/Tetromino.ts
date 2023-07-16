@@ -165,6 +165,14 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
       return zip(xCoords, yCoords).map(coord => ({ coord, rotation: i }));
     });
   }
+
+  public copy(): Tetromino {
+    const tetromino = this.create(this.scene);
+    tetromino.currRotation = this.currRotation;
+    return tetromino;
+  }
+
+  protected abstract create(scene: TetrisScene): Tetromino;
 }
 
 export class I extends Tetromino {
@@ -182,6 +190,10 @@ export class I extends Tetromino {
     super(scene, I_TEXTURE, 4, 0);
     this.updatePosition();
     this.rotateRight();
+  }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new I(scene);
   }
 }
 
@@ -202,6 +214,10 @@ export class J extends Tetromino {
     super(scene, J_TEXTURE, 3, 0);
     this.updatePosition();
   }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new J(scene);
+  }
 }
 
 export class L extends Tetromino {
@@ -221,6 +237,10 @@ export class L extends Tetromino {
     super(scene, L_TEXTURE, 3, 0);
     this.updatePosition();
   }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new L(scene);
+  }
 }
 
 export class O extends Tetromino {
@@ -235,6 +255,10 @@ export class O extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, O_TEXTURE, 4, 0);
+  }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new O(scene);
   }
 }
 
@@ -252,6 +276,10 @@ export class S extends Tetromino {
   constructor(scene: TetrisScene) {
     super(scene, S_TEXTURE, 3, 0);
     this.updatePosition();
+  }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new S(scene);
   }
 }
 
@@ -272,6 +300,10 @@ export class T extends Tetromino {
     super(scene, T_TEXTURE, 3, 0);
     this.updatePosition();
   }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new T(scene);
+  }
 }
 
 export class Z extends Tetromino {
@@ -288,5 +320,9 @@ export class Z extends Tetromino {
   constructor(scene: TetrisScene) {
     super(scene, Z_TEXTURE, 3, 0);
     this.updatePosition();
+  }
+
+  protected create(scene: TetrisScene): Tetromino {
+    return new Z(scene);
   }
 }

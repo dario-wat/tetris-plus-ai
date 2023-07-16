@@ -296,7 +296,7 @@ export default class TetrisState {
 
 
   /******************************************************************
-   * Heuristic
+   * Heuristic & AI
    *****************************************************************/
 
   /** An array of the heights of each column */
@@ -346,9 +346,19 @@ export default class TetrisState {
   }
 
   /** Turn this state into sandbox mode. Nothing is visible in the scene. */
-  public sandbox(): void {
+  private sandbox(): void {
     this.makeInvisible();
     this.isSandbox = true;
+  }
+
+  private copy(): TetrisState {
+    const tetrisState = new TetrisState(this.scene);
+    tetrisState.blocks = [...this.blocks];
+    tetrisState.tetromino = this.tetromino.copy();
+    tetrisState.gameOver = this.gameOver;
+    tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
+    tetrisState.sandbox();
+    return tetrisState;
   }
 
   /** Makes all game objects invisible and thus this state invisible. */
@@ -356,4 +366,11 @@ export default class TetrisState {
     this.blocks.forEach(block => block.setVisible(false));
     this.tetromino.setVisible(false);
   }
+
+  // TODO
+  // private enumerateNextTetrisStates(): TetrisState[] {
+  //   return this.tetromino.enumerateDropPositions(dropPosition => 
+
+  //     );
+  // }
 }
