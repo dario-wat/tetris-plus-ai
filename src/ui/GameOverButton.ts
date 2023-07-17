@@ -44,6 +44,7 @@ export default class GameOverButton {
       this.buttonGraphics.clear();
       this.drawButton(defaultColor);
 
+      // TODO emit event ??
       this.scene.events.emit(ON_GAME_OVER_BUTTON_CLICK_EVENT);
     });
 

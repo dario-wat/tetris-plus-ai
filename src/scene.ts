@@ -1,15 +1,15 @@
 import * as Phaser from 'phaser';
-import TetrisArena from './game_objects/TetrisArena';
+import TetrisArena from './ui/TetrisArena';
 import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
-import NextTetromino from './game_objects/NextTetromino';
+import NextTetromino from './ui/NextTetromino';
 import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y } from './lib/consts';
-import GameOverButton from './game_objects/GameOverButton';
-import Text from './game_objects/Text';
-import DebugGraphics from './game_objects/DebugGraphics';
-import { BlockSprite } from './game_objects/Block';
-import { TetrominoSprite } from './game_objects/Tetromino';
+import GameOverButton from './ui/GameOverButton';
+import Text from './ui/Text';
+import DebugGraphics from './ui/DebugGraphics';
+import BlockSprite from './ui/BlockSprite';
+import TetrominoSprite from './ui/TetrominoSprite';
 
 // TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)

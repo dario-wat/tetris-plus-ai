@@ -13,6 +13,7 @@ export default class DebugGraphics extends Phaser.GameObjects.Graphics {
 
     this.depth = DEBUG_GRAPHICS_DEPTH;
 
+    // TODO event?
     scene.events.on(
       DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
       (coord: Coord) => {

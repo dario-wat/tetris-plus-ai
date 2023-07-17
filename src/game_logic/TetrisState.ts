@@ -4,7 +4,7 @@ import { ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "..
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { Coord, DropPosition } from "../types";
-import { Block } from "../game_objects/Block";
+import Block from "../game_objects/Block";
 
 export default class TetrisState {
 
