@@ -8,12 +8,16 @@ import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDA
 import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
 import DebugGraphics from './game_objects/DebugGraphics';
+import { BlockSprite } from './game_objects/Block';
 
 // TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO remove scene from non objects
 // TODO IMPORTANT separate logic classes from rendering classes (tetromino and blocks)
+// TODO memory leak in best move
+// TODO maybe use events for blocks
+// TODO drop position should have only column and rotation
 
 const DELAY_MS = 400;
 
@@ -22,6 +26,8 @@ export class TetrisScene extends Phaser.Scene {
   private keys: KeyboardInput;
 
   private tetrisState: TetrisState;
+
+  private blocks: BlockSprite[] = [];
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -80,5 +86,14 @@ export class TetrisScene extends Phaser.Scene {
     this.tetrisState.makeStep();
   }
 
-  update(): void { }
+  update(): void {
+
+
+    // TODO extract to some system
+    this.blocks.forEach(block => block.destroy());
+    this.blocks = [];
+    this.blocks = this.tetrisState.blocks.map(block =>
+      new BlockSprite(this, block.xCoord, block.yCoord, block.texture)
+    );
+  }
 }

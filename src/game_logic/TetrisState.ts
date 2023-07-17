@@ -1,14 +1,14 @@
 import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
-import Block from "../game_objects/Block";
 import { Tetromino } from "../game_objects/Tetromino";
 import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, NEXT_TETROMINO_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
-import { DropPosition } from "../types";
+import { Coord, DropPosition } from "../types";
+import { Block } from "../game_objects/Block";
 
 export default class TetrisState {
 
-  private blocks: Block[] = [];
+  public blocks: Block[] = [];
   private tetromino: Tetromino;
   private gameOver: boolean = false;
   private tetrominoGenerator: TetrominoGenerator;
@@ -24,15 +24,18 @@ export default class TetrisState {
    */
   constructor(
     private scene: TetrisScene,
+    isCopy: boolean = false,
   ) {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();
 
-    this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
-    this.scene.events.on('update', () => {
-      this.isSandbox && this.makeInvisible();
-      this.emitHeuristicTextUpdated();
-    });
+    if (!isCopy) {
+      this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
+      this.scene.events.on('update', () => {
+        this.isSandbox && this.makeInvisible();
+        this.emitHeuristicTextUpdated();
+      });
+    }
   }
 
   // This is not ideal since it's used in many places and ideally it should
@@ -56,7 +59,9 @@ export default class TetrisState {
 
     if (!this.isSandbox) {
       const move = this.bestMove();
+      // console.log(move);
       this.tetromino.forceDropPosition(move);
+      console.log(this.scene.children.getAll())
     }
   }
 
@@ -82,7 +87,6 @@ export default class TetrisState {
   }
 
   private reset(): void {
-    this.blocks.map(block => block.destroy());
     this.blocks = [];
     this.tetrominoGenerator.reset();
 
@@ -268,10 +272,6 @@ export default class TetrisState {
     const fullRows = this.fullRows();
 
     for (const indexToCrush of fullRows.sort()) {
-      // Destroy Blocks that should be crushed
-      this.blocks.filter(block => block.yCoord === indexToCrush)
-        .forEach(block => block.destroy());
-
       // Remove Blocks that should be crushed
       this.blocks = this.blocks.filter(block => block.yCoord !== indexToCrush);
 
@@ -291,8 +291,7 @@ export default class TetrisState {
 
     const coords = this.tetromino.getAllCoords();
     for (const [xCoord, yCoord] of coords) {
-      this.blocks.push(
-        new Block(this.scene, xCoord, yCoord, this.tetromino.blockTexture)
+      this.blocks.push(new Block(xCoord, yCoord, this.tetromino.blockTexture)
       );
     }
   }
@@ -367,19 +366,26 @@ export default class TetrisState {
 
   /** Makes all game objects invisible and thus this state invisible. */
   private makeInvisible(): void {
-    this.blocks.forEach(block => block.setVisible(false));
     this.tetromino.setVisible(false);
   }
 
   private copy(): TetrisState {
-    const tetrisState = new TetrisState(this.scene);
-    tetrisState.blocks = this.blocks.map(block => block.copyInvisible());
+    const tetrisState = new TetrisState(this.scene, true);
+    tetrisState.blocks = [...this.blocks];
     tetrisState.tetromino.destroy();
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
     tetrisState.sandbox();
     return tetrisState;
+  }
+
+  private destroy(): void {
+    this.tetromino.destroy();
+    this.tetromino = undefined;
+    this.blocks = undefined;
+    this.tetrominoGenerator = undefined;
+    this.scene = undefined;
   }
 
   /** What is the best next position to drop this tetromino. */
@@ -390,7 +396,8 @@ export default class TetrisState {
         tetrisState.sandbox();
         tetrisState.tetromino.forceDropPosition(dropPosition);
         tetrisState.tetrominoTotalDrop();
-        const hScore = tetrisState.heuristic(1, 0, 1);
+        const hScore = tetrisState.heuristic(1, 0, 10);
+        tetrisState.destroy();
         return [dropPosition, hScore] as const;
       });
     return minBy(heuristicScores, h => h[1])[0];
