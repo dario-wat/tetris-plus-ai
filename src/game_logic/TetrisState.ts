@@ -9,7 +9,7 @@ import { Block } from "../game_objects/Block";
 export default class TetrisState {
 
   public blocks: Block[] = [];
-  public tetromino: Tetromino;
+  public tetromino: Tetromino | null = null;
   private gameOver: boolean = false;
   private tetrominoGenerator: TetrominoGenerator;
 
@@ -29,19 +29,19 @@ export default class TetrisState {
     this.tetrominoGenerator = new TetrominoGenerator(scene);
     this.tetromino = this.tetrominoGenerator.create();
 
-    if (!isCopy) {
-      this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
-      this.scene.events.on('update', () => {
-        this.isSandbox && this.makeInvisible();
-        this.emitHeuristicTextUpdated();
-      });
-    }
+    // if (!isCopy) {
+    //   this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
+    //   this.scene.events.on('update', () => {
+    //     this.isSandbox && this.makeInvisible();
+    //     this.emitHeuristicTextUpdated();
+    //   });
+    // }
   }
 
   // This is not ideal since it's used in many places and ideally it should
   // be used in only one place. But it works
   private createNewTetromino(): void {
-    if (!this.tetromino.scene) {
+    if (!this.tetromino) {  // TODO null, undefined ?
       this.tetromino = this.tetrominoGenerator.create();
 
       !this.isSandbox && this.scene.events.emit(
@@ -57,12 +57,12 @@ export default class TetrisState {
       }
     }
 
-    // if (!this.isSandbox) {
-    //   const move = this.bestMove();
-    //   // console.log(move);
-    //   this.tetromino.forceDropPosition(move);
-    //   console.log(this.scene.children.getAll())
-    // }
+    if (!this.isSandbox) {
+      const move = this.bestMove();
+      // console.log(move);
+      this.tetromino.forceDropPosition(move);
+      console.log(this.scene.children.getAll())
+    }
   }
 
 
@@ -90,7 +90,8 @@ export default class TetrisState {
     this.blocks = [];
     this.tetrominoGenerator.reset();
 
-    this.tetromino.destroy();
+    // this.tetromino.destroy();
+    this.tetromino = null
     this.createNewTetromino();
 
     this.gameOver = false;
@@ -149,7 +150,7 @@ export default class TetrisState {
    * board or the top of the stack.
    */
   public tetrominoDrop(): boolean {
-    if (this.gameOver || !this.tetromino.scene) {
+    if (this.gameOver || !this.tetromino) {
       return false;
     }
 
@@ -159,13 +160,14 @@ export default class TetrisState {
     }
 
     this.destructureTetromino();
-    this.tetromino.destroy();
+    this.tetromino = null;
+    // this.tetromino.destroy();
     return false;
   }
 
   /** Drops the tetromino to the bottom. */
   public tetrominoTotalDrop(): void {
-    if (!this.gameOver && this.tetromino.scene) {
+    if (!this.gameOver && this.tetromino) {
       while (this.tetrominoDrop()) { }
       this.createNewTetromino();
     }
@@ -372,7 +374,7 @@ export default class TetrisState {
   private copy(): TetrisState {
     const tetrisState = new TetrisState(this.scene, true);
     tetrisState.blocks = [...this.blocks];
-    tetrisState.tetromino.destroy();
+    // tetrisState.tetromino.destroy();
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
@@ -381,7 +383,8 @@ export default class TetrisState {
   }
 
   private destroy(): void {
-    this.tetromino.destroy();
+    // this.tetromino.destroy();
+    this.tetromino = null;
     this.tetromino = undefined;
     this.blocks = undefined;
     this.tetrominoGenerator = undefined;

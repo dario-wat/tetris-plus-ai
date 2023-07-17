@@ -101,15 +101,17 @@ export class TetrisScene extends Phaser.Scene {
 
 
     // TODO extract
-    this.tetromino?.destroy();
-    this.tetromino = new TetrominoSprite(
-      this,
-      this.tetrisState.tetromino.xCoord,
-      this.tetrisState.tetromino.yCoord,
-      this.tetrisState.tetromino.getTetrWidth(),
-      this.tetrisState.tetromino.getTetrHeight(),
-      this.tetrisState.tetromino.currRotation,
-      this.tetrisState.tetromino.texture.key,
-    );
+    if (this.tetrisState.tetromino) {
+      this.tetromino?.destroy();
+      this.tetromino = new TetrominoSprite(
+        this,
+        this.tetrisState.tetromino.xCoord,
+        this.tetrisState.tetromino.yCoord,
+        this.tetrisState.tetromino.getTetrWidth(),
+        this.tetrisState.tetromino.getTetrHeight(),
+        this.tetrisState.tetromino.currRotation,
+        this.tetrisState.tetromino.texture.key,
+      );
+    }
   }
 }
