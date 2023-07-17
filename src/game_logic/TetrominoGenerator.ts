@@ -2,8 +2,6 @@ import { shuffle } from "lodash";
 import { I, J, L, O, S, T, Tetromino, Z } from "../game_objects/Tetromino";
 import { TetrominoEnum } from "../lib/tetromino_enum";
 
-// TODO random generation is really weird
-
 export default class TetrominoGenerator {
 
   private queue: TetrominoEnum[];
@@ -12,7 +10,10 @@ export default class TetrominoGenerator {
     this.queue = newShuffledQueue();
   }
 
-  /** Creates a new tetromino. */
+  /** 
+   * Creates a new tetromino. There is always at least 1 
+   * tetromino in the queue. 
+   */
   public create(): Tetromino {
     if (this.queue.length <= 1) {
       this.queue = [...this.queue, ...newShuffledQueue()];

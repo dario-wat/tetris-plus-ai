@@ -6,4 +6,8 @@ export default class Block {
     public yCoord: number,
     public readonly texture: string,
   ) { }
+
+  public copy(): Block {
+    return new Block(this.xCoord, this.yCoord, this.texture);
+  }
 }

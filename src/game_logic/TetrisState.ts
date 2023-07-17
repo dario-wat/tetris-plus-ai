@@ -37,11 +37,11 @@ export default class TetrisState {
       }
     }
 
-    // if (!this.isSandbox) {
-    //   const move = this.bestMove();
-    //   // console.log(move);
-    //   this.tetromino.forceDropPosition(move);
-    // }
+    if (!this.isSandbox) {    // TODO remove issandbox
+      const move = this.bestMove();
+      // console.log(move);
+      this.tetromino.forceDropPosition(move);
+    }
   }
 
 
@@ -339,9 +339,12 @@ export default class TetrisState {
     this.isSandbox = true;
   }
 
+  // TODO this might be expensive, is there a cheaper copy
   private copy(): TetrisState {
     const tetrisState = new TetrisState();
-    tetrisState.blocks = [...this.blocks];
+
+    // TODO this blocks part might be expensive
+    tetrisState.blocks = this.blocks.map(block => block.copy());
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
