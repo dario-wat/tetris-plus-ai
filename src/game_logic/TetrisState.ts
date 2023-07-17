@@ -26,9 +26,10 @@ export default class TetrisState {
     private scene: TetrisScene,
     isCopy: boolean = false,
   ) {
-    this.tetrominoGenerator = new TetrominoGenerator(scene);
+    this.tetrominoGenerator = new TetrominoGenerator();
     this.tetromino = this.tetrominoGenerator.create();
 
+    // TODO
     // if (!isCopy) {
     //   this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
     //   this.scene.events.on('update', () => {
@@ -57,12 +58,12 @@ export default class TetrisState {
       }
     }
 
-    if (!this.isSandbox) {
-      const move = this.bestMove();
-      // console.log(move);
-      this.tetromino.forceDropPosition(move);
-      console.log(this.scene.children.getAll())
-    }
+    // if (!this.isSandbox) {
+    //   const move = this.bestMove();
+    //   // console.log(move);
+    //   this.tetromino.forceDropPosition(move);
+    //   console.log(this.scene.children.getAll())
+    // }
   }
 
 
@@ -368,7 +369,7 @@ export default class TetrisState {
 
   /** Makes all game objects invisible and thus this state invisible. */
   private makeInvisible(): void {
-    this.tetromino.setVisible(false);
+    // this.tetromino.setVisible(false);
   }
 
   private copy(): TetrisState {

@@ -14,7 +14,7 @@ type RotationSize = [number, number]
  * the tetromino sprites starting from the top left corner and then having
  * to rotate around the center.
  */
-export abstract class Tetromino extends Phaser.GameObjects.Sprite {
+export abstract class Tetromino {
 
   /** Texture of the individual blocks. */
   public abstract readonly blockTexture: string;
@@ -27,26 +27,26 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   protected abstract readonly rotationCenterOffset: Coord[];
   public currRotation: number = 0;
 
+  // TODO all public, and not readonly ?
   protected constructor(
-    public scene: TetrisScene,
-    texture: string,
+    public texture: string,
     public xCoord: number,
     public yCoord: number,
   ) {
-    super(scene, 0, 0, texture);
-    scene.add.existing(this);
+    // super(scene, 0, 0, texture);
+    // scene.add.existing(this);
 
-    this.setVisible(false);
+    // this.setVisible(false);
 
-    this.setScale(SCALE);
+    // this.setScale(SCALE);
 
-    this.scene.events.on('update', () => {
-      this.scene &&
-        this.scene.events.emit(
-          DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
-          this.getCenterPoint(),
-        );
-    });
+    // this.scene.events.on('update', () => {
+    //   this.scene &&
+    //     this.scene.events.emit(
+    //       DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
+    //       this.getCenterPoint(),
+    //     );
+    // });
   }
 
   public getTetrWidth(): number {
@@ -125,12 +125,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   public copy(): Tetromino {
-    const tetromino = this.create(this.scene);
+    const tetromino = this.create();
     tetromino.currRotation = this.currRotation;
     return tetromino;
   }
 
-  protected abstract create(scene: TetrisScene): Tetromino;
+  protected abstract create(): Tetromino;
 }
 
 export class I extends Tetromino {
@@ -144,13 +144,13 @@ export class I extends Tetromino {
 
   public readonly blockTexture: string = LIGHT_BLUE;
 
-  constructor(scene: TetrisScene) {
-    super(scene, I_TEXTURE, 4, 0);
+  constructor() {
+    super(I_TEXTURE, 4, 0);
     this.rotateRight();
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new I(scene);
+  protected create(): Tetromino {
+    return new I();
   }
 }
 
@@ -167,12 +167,12 @@ export class J extends Tetromino {
 
   public readonly blockTexture: string = BLUE;
 
-  constructor(scene: TetrisScene) {
-    super(scene, J_TEXTURE, 3, 0);
+  constructor() {
+    super(J_TEXTURE, 3, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new J(scene);
+  protected create(): Tetromino {
+    return new J();
   }
 }
 
@@ -189,12 +189,12 @@ export class L extends Tetromino {
 
   public readonly blockTexture: string = ORANGE;
 
-  constructor(scene: TetrisScene) {
-    super(scene, L_TEXTURE, 3, 0);
+  constructor() {
+    super(L_TEXTURE, 3, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new L(scene);
+  protected create(): Tetromino {
+    return new L();
   }
 }
 
@@ -208,12 +208,12 @@ export class O extends Tetromino {
 
   public readonly blockTexture: string = YELLOW;
 
-  constructor(scene: TetrisScene) {
-    super(scene, O_TEXTURE, 4, 0);
+  constructor() {
+    super(O_TEXTURE, 4, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new O(scene);
+  protected create(): Tetromino {
+    return new O();
   }
 }
 
@@ -228,12 +228,12 @@ export class S extends Tetromino {
 
   public readonly blockTexture: string = GREEN;
 
-  constructor(scene: TetrisScene) {
-    super(scene, S_TEXTURE, 3, 0);
+  constructor() {
+    super(S_TEXTURE, 3, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new S(scene);
+  protected create(): Tetromino {
+    return new S();
   }
 }
 
@@ -250,12 +250,12 @@ export class T extends Tetromino {
 
   public readonly blockTexture: string = PURPLE;
 
-  constructor(scene: TetrisScene) {
-    super(scene, T_TEXTURE, 3, 0);
+  constructor() {
+    super(T_TEXTURE, 3, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new T(scene);
+  protected create(): Tetromino {
+    return new T();
   }
 }
 
@@ -270,12 +270,12 @@ export class Z extends Tetromino {
 
   public readonly blockTexture: string = RED;
 
-  constructor(scene: TetrisScene) {
-    super(scene, Z_TEXTURE, 3, 0);
+  constructor() {
+    super(Z_TEXTURE, 3, 0);
   }
 
-  protected create(scene: TetrisScene): Tetromino {
-    return new Z(scene);
+  protected create(): Tetromino {
+    return new Z();
   }
 }
 

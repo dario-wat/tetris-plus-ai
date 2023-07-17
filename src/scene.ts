@@ -110,7 +110,7 @@ export class TetrisScene extends Phaser.Scene {
         this.tetrisState.tetromino.getTetrWidth(),
         this.tetrisState.tetromino.getTetrHeight(),
         this.tetrisState.tetromino.currRotation,
-        this.tetrisState.tetromino.texture.key,
+        this.tetrisState.tetromino.texture,
       );
     }
   }

@@ -9,11 +9,11 @@ export default class TetrominoGenerator {
 
   private queue: TetrominoEnum[];
 
-  constructor(private scene: TetrisScene) {
+  constructor() {
     this.queue = newShuffledQueue();
   }
 
-  /** Creates a new tetromino in the scene. */
+  /** Creates a new tetromino. */
   public create(): Tetromino {
     if (this.queue.length <= 1) {
       this.queue = [...this.queue, ...newShuffledQueue()];
@@ -26,19 +26,19 @@ export default class TetrominoGenerator {
   private createTetromino(index: TetrominoEnum): Tetromino {
     switch (index) {
       case TetrominoEnum.I:
-        return new I(this.scene);
+        return new I();
       case TetrominoEnum.J:
-        return new J(this.scene);
+        return new J();
       case TetrominoEnum.L:
-        return new L(this.scene);
+        return new L();
       case TetrominoEnum.O:
-        return new O(this.scene);
+        return new O();
       case TetrominoEnum.S:
-        return new S(this.scene);
+        return new S();
       case TetrominoEnum.T:
-        return new T(this.scene);
+        return new T();
       case TetrominoEnum.Z:
-        return new Z(this.scene);
+        return new Z();
     }
   }
 
@@ -52,7 +52,7 @@ export default class TetrominoGenerator {
   }
 
   public copy(): TetrominoGenerator {
-    const tetrominoGenerator = new TetrominoGenerator(this.scene);
+    const tetrominoGenerator = new TetrominoGenerator();
     tetrominoGenerator.queue = [...this.queue];
     return tetrominoGenerator;
   }
