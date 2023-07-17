@@ -1,6 +1,6 @@
 import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
-import { GAME_OVER_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { Coord, DropPosition } from "../types";
@@ -10,11 +10,12 @@ export default class TetrisState {
 
   public blocks: Block[] = [];
   public tetromino: Tetromino | null = null;
-  private gameOver: boolean = false;
+  public gameOver: boolean = false;
   public tetrominoGenerator: TetrominoGenerator;
 
   private isSandbox: boolean = false;
 
+  // TODO this comment doesn't make sense
   /**
    * Initialized tetris state in the scene.
    * 1. Create a new tetromino queue (generator)
@@ -47,17 +48,14 @@ export default class TetrisState {
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
-        !this.isSandbox &&
-          this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
       }
     }
 
-    if (!this.isSandbox) {
-      const move = this.bestMove();
-      // console.log(move);
-      this.tetromino.forceDropPosition(move);
-      console.log(this.scene.children.getAll())
-    }
+    // if (!this.isSandbox) {
+    //   const move = this.bestMove();
+    //   // console.log(move);
+    //   this.tetromino.forceDropPosition(move);
+    // }
   }
 
 
@@ -85,13 +83,10 @@ export default class TetrisState {
     this.blocks = [];
     this.tetrominoGenerator.reset();
 
-    // this.tetromino.destroy();
     this.tetromino = null
     this.createNewTetromino();
 
     this.gameOver = false;
-    !this.isSandbox &&
-      this.scene.events.emit(GAME_OVER_EVENT, this.gameOver);
   }
 
   /** 
@@ -354,13 +349,7 @@ export default class TetrisState {
 
   /** Turn this state into sandbox mode. Nothing is visible in the scene. */
   private sandbox(): void {
-    this.makeInvisible();
     this.isSandbox = true;
-  }
-
-  /** Makes all game objects invisible and thus this state invisible. */
-  private makeInvisible(): void {
-    // this.tetromino.setVisible(false);
   }
 
   private copy(): TetrisState {
