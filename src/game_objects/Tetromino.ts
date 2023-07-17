@@ -25,7 +25,7 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   protected abstract readonly rotationCoords: Coord[][];
   /** Coordinate offset for the center of the tetromino. */
   protected abstract readonly rotationCenterOffset: Coord[];
-  protected currRotation: number = 0;
+  public currRotation: number = 0;
 
   protected constructor(
     public scene: TetrisScene,
@@ -35,6 +35,8 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   ) {
     super(scene, 0, 0, texture);
     scene.add.existing(this);
+
+    this.setVisible(false);
 
     this.setScale(SCALE);
 
@@ -63,6 +65,14 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     );
   }
 
+  public getTetrWidth(): number {
+    return this.rotations[this.currRotation][0];
+  }
+
+  public getTetrHeight(): number {
+    return this.rotations[this.currRotation][1];
+  }
+
   public moveRight(): void {
     this.xCoord += 1;
   }
@@ -76,13 +86,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   public rotateRight(): void {
-    this.updateCurrRotation((this.currRotation + 1) % this.rotations.length);
+    this.currRotation = (this.currRotation + 1) % this.rotations.length;
   }
 
   public rotateLeft(): void {
-    this.updateCurrRotation(
-      (this.currRotation + this.rotations.length - 1) % this.rotations.length
-    );
+    this.currRotation =
+      (this.currRotation + this.rotations.length - 1) % this.rotations.length;
   }
 
   /** 
@@ -90,15 +99,10 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
    * locking it again.
    */
   private updateCurrRotation(newCurrRotation: number): void {
-    this.unlockFromCenter();
-
     const rotationDx = newCurrRotation > this.currRotation
       ? newCurrRotation - this.currRotation
       : - (this.currRotation - newCurrRotation);
     this.currRotation = newCurrRotation;
-    this.setRotation(this.rotation + rotationDx * Math.PI / 2)
-
-    this.lockToCenter();
   }
 
   /** 
@@ -324,5 +328,43 @@ export class Z extends Tetromino {
 
   protected create(scene: TetrisScene): Tetromino {
     return new Z(scene);
+  }
+}
+
+
+export class TetrominoSprite extends Phaser.GameObjects.Sprite {
+
+  constructor(
+    scene: TetrisScene,
+    private xCoord: number,
+    private yCoord: number,
+    private tetrWidth: number,
+    private tetrHeight: number,
+    private rotationIndex: number,
+    texture: string,
+  ) {
+    super(scene, 0, 0, texture);
+    scene.add.existing(this);
+
+    this.setScale(SCALE);
+
+    this.updatePosition();
+    this.updateRotation();
+  }
+
+  /**
+   * Updates the position of the tetromino based on the coordinates and the
+   * rotation. This is called inside each tetromino constructor even
+   * though it probably shouldn't.
+   */
+  private updatePosition(): void {
+    this.setPosition(
+      cx(this.xCoord, this.tetrWidth),
+      cy(this.yCoord, this.tetrHeight),
+    );
+  }
+
+  private updateRotation(): void {
+    this.setRotation(this.rotation + this.rotationIndex * Math.PI / 2);
   }
 }

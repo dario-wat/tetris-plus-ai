@@ -9,7 +9,7 @@ import { Block } from "../game_objects/Block";
 export default class TetrisState {
 
   public blocks: Block[] = [];
-  private tetromino: Tetromino;
+  public tetromino: Tetromino;
   private gameOver: boolean = false;
   private tetrominoGenerator: TetrominoGenerator;
 
@@ -57,12 +57,12 @@ export default class TetrisState {
       }
     }
 
-    if (!this.isSandbox) {
-      const move = this.bestMove();
-      // console.log(move);
-      this.tetromino.forceDropPosition(move);
-      console.log(this.scene.children.getAll())
-    }
+    // if (!this.isSandbox) {
+    //   const move = this.bestMove();
+    //   // console.log(move);
+    //   this.tetromino.forceDropPosition(move);
+    //   console.log(this.scene.children.getAll())
+    // }
   }
 
 

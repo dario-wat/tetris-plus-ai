@@ -9,6 +9,7 @@ import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
 import DebugGraphics from './game_objects/DebugGraphics';
 import { BlockSprite } from './game_objects/Block';
+import { TetrominoSprite } from './game_objects/Tetromino';
 
 // TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
@@ -28,6 +29,7 @@ export class TetrisScene extends Phaser.Scene {
   private tetrisState: TetrisState;
 
   private blocks: BlockSprite[] = [];
+  private tetromino: TetrominoSprite = undefined;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -94,6 +96,20 @@ export class TetrisScene extends Phaser.Scene {
     this.blocks = [];
     this.blocks = this.tetrisState.blocks.map(block =>
       new BlockSprite(this, block.xCoord, block.yCoord, block.texture)
+    );
+
+
+
+    // TODO extract
+    this.tetromino?.destroy();
+    this.tetromino = new TetrominoSprite(
+      this,
+      this.tetrisState.tetromino.xCoord,
+      this.tetrisState.tetromino.yCoord,
+      this.tetrisState.tetromino.getTetrWidth(),
+      this.tetrisState.tetromino.getTetrHeight(),
+      this.tetrisState.tetromino.currRotation,
+      this.tetrisState.tetromino.texture.key,
     );
   }
 }
