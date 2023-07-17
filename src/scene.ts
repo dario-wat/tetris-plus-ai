@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './game_objects/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, HEURISTIC_TEXT_UPDATED_EVENT } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y } from './lib/consts';
 import GameOverButton from './game_objects/GameOverButton';
 import Text from './game_objects/Text';
 import DebugGraphics from './game_objects/DebugGraphics';
@@ -32,6 +32,7 @@ export class TetrisScene extends Phaser.Scene {
   private tetromino: TetrominoSprite = undefined;
 
   private nextTetromino: NextTetromino;
+  private debugText: Text;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -48,7 +49,9 @@ export class TetrisScene extends Phaser.Scene {
 
     new TetrisArena(this);
     new GameOverButton(this);
-    new Text(
+
+
+    this.debugText = new Text(
       this,
       DEBUG_TEXT_X,
       DEBUG_TEXT_Y,
@@ -57,8 +60,9 @@ export class TetrisScene extends Phaser.Scene {
         fontSize: '14px',
         color: '#FFFFFF' // White color
       },
-      HEURISTIC_TEXT_UPDATED_EVENT,
     );
+
+
     DEBUG_GRAPHICS_ENABLED && new DebugGraphics(this);
 
 
@@ -121,5 +125,8 @@ export class TetrisScene extends Phaser.Scene {
 
     // TODO extract
     this.nextTetromino.setNext(this.tetrisState.tetrominoGenerator.next());
+
+
+    this.debugText.setText(this.tetrisState.getHeuristicText());
   }
 }

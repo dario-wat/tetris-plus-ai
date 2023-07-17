@@ -1,6 +1,6 @@
 import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
-import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { GAME_OVER_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { Coord, DropPosition } from "../types";
@@ -346,13 +346,10 @@ export default class TetrisState {
   }
 
   /** Used for the heuristic debug text */
-  private emitHeuristicTextUpdated(): void {
-    !this.isSandbox && this.scene.events.emit(
-      HEURISTIC_TEXT_UPDATED_EVENT,
-      'Height sum: ' + this.heightsSum()
+  public getHeuristicText(): string {
+    return 'Height sum: ' + this.heightsSum()
       + '\nHeight diff sum: ' + this.heightsDifferenceSum()
-      + '\nHole count: ' + this.holeCount(),
-    );
+      + '\nHole count: ' + this.holeCount()
   }
 
   /** Turn this state into sandbox mode. Nothing is visible in the scene. */
