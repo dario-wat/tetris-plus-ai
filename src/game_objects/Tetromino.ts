@@ -1,14 +1,9 @@
-import * as Phaser from 'phaser';
-import { TetrisScene } from '../scene';
-import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
-import { SCALE, TETRIS_WIDTH } from '../lib/consts';
-import { cx, cy } from '../lib/grid';
+import * as Textures from '../lib/textures';
+import { TETRIS_WIDTH } from '../lib/consts';
 import { Coord, DropPosition } from '../types';
 import { range, zip } from 'lodash';
 
 type RotationSize = [number, number]
-
-// TODO I tetromino starts weird
 
 /**
  * Abstract class for a tetromino containing most of the movement logic.
@@ -27,9 +22,9 @@ export abstract class Tetromino {
   protected abstract readonly rotationCoords: Coord[][];
   /** Coordinate offset for the center of the tetromino. */
   protected abstract readonly rotationCenterOffset: Coord[];
+
   public currRotation: number = 0;
 
-  // TODO all public, and not readonly ?
   protected constructor(
     public xCoord: number,
     public yCoord: number,
@@ -75,11 +70,7 @@ export abstract class Tetromino {
     this.yCoord = dropPosition.coord[1];
   }
 
-  // TODO is this still useful?
-  /** 
-   * This is used only for debugging. It is the same as unlock because all
-   * tetrominoes are locked to center by default.
-   */
+  /** Gets the center block coordinates of the tetromino. */
   public getCenterPoint(): Coord {
     const dx = this.rotationCenterOffset[this.currRotation][0];
     const dy = this.rotationCenterOffset[this.currRotation][1];
@@ -129,11 +120,10 @@ export class I extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0], [1, 0]];
 
-  public readonly blockTexture: string = LIGHT_BLUE;
+  public readonly blockTexture: string = Textures.LIGHT_BLUE;
 
   constructor() {
-    super(4, 0, I_TEXTURE);
-    this.rotateRight();
+    super(4, 0, Textures.I_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -152,10 +142,10 @@ export class J extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  public readonly blockTexture: string = BLUE;
+  public readonly blockTexture: string = Textures.BLUE;
 
   constructor() {
-    super(3, 0, J_TEXTURE);
+    super(3, 0, Textures.J_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -174,10 +164,10 @@ export class L extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  public readonly blockTexture: string = ORANGE;
+  public readonly blockTexture: string = Textures.ORANGE;
 
   constructor() {
-    super(3, 0, L_TEXTURE);
+    super(3, 0, Textures.L_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -193,10 +183,10 @@ export class O extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[0, 0]];
 
-  public readonly blockTexture: string = YELLOW;
+  public readonly blockTexture: string = Textures.YELLOW;
 
   constructor() {
-    super(4, 0, O_TEXTURE);
+    super(4, 0, Textures.O_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -213,10 +203,10 @@ export class S extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  public readonly blockTexture: string = GREEN;
+  public readonly blockTexture: string = Textures.GREEN;
 
   constructor() {
-    super(3, 0, S_TEXTURE);
+    super(3, 0, Textures.S_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -235,10 +225,10 @@ export class T extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  public readonly blockTexture: string = PURPLE;
+  public readonly blockTexture: string = Textures.PURPLE;
 
   constructor() {
-    super(3, 0, T_TEXTURE);
+    super(3, 0, Textures.T_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -255,10 +245,10 @@ export class Z extends Tetromino {
   ];
   protected rotationCenterOffset: Coord[] = [[1, 1], [0, 1], [1, 0], [1, 1]];
 
-  public readonly blockTexture: string = RED;
+  public readonly blockTexture: string = Textures.RED;
 
   constructor() {
-    super(3, 0, Z_TEXTURE);
+    super(3, 0, Textures.Z_TEXTURE);
   }
 
   protected create(): Tetromino {
