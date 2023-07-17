@@ -8,6 +8,8 @@ import { range, zip } from 'lodash';
 
 type RotationSize = [number, number]
 
+// TODO I tetromino starts weird
+
 /**
  * Abstract class for a tetromino containing most of the movement logic.
  * Most of the rotation logic complexity stems directly from us rendering
@@ -32,16 +34,7 @@ export abstract class Tetromino {
     public texture: string,
     public xCoord: number,
     public yCoord: number,
-  ) {
-    // TODO
-    // this.scene.events.on('update', () => {
-    //   this.scene &&
-    //     this.scene.events.emit(
-    //       DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
-    //       this.getCenterPoint(),
-    //     );
-    // });
-  }
+  ) { }
 
   public getTetrWidth(): number {
     return this.rotations[this.currRotation][0];
@@ -87,7 +80,7 @@ export abstract class Tetromino {
    * This is used only for debugging. It is the same as unlock because all
    * tetrominoes are locked to center by default.
    */
-  private getCenterPoint(): Coord {
+  public getCenterPoint(): Coord {
     const dx = this.rotationCenterOffset[this.currRotation][0];
     const dy = this.rotationCenterOffset[this.currRotation][1];
     return [this.xCoord + dx, this.yCoord + dy];

@@ -34,6 +34,7 @@ export class TetrisScene extends Phaser.Scene {
   private nextTetromino: NextTetromino;
   private debugText: Text;
   private gameOverButton: GameOverButton;
+  private debugGraphics: DebugGraphics | null = null;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -66,7 +67,9 @@ export class TetrisScene extends Phaser.Scene {
     );
 
 
-    DEBUG_GRAPHICS_ENABLED && new DebugGraphics(this);
+    if (DEBUG_GRAPHICS_ENABLED) {
+      this.debugGraphics = new DebugGraphics(this);
+    }
 
 
     this.nextTetromino = new NextTetromino(this);
@@ -133,5 +136,9 @@ export class TetrisScene extends Phaser.Scene {
     this.debugText.setText(this.tetrisState.getHeuristicText());
 
     this.gameOverButton.setVisible(this.tetrisState.gameOver);
+
+    if (this.debugGraphics) {
+      this.debugGraphics.tetrominoPoint = this.tetrisState.tetromino?.getCenterPoint();
+    }
   }
 }
