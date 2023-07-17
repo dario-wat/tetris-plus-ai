@@ -23,9 +23,9 @@ export const DEBUG_GRAPHICS_DEPTH = 10;
 export const GAME_OVER_BUTTON_DEPTH = 1;
 
 // Events
+// TODO some are unused, clean them up
 export const ON_GAME_OVER_BUTTON_CLICK_EVENT = 'onGameOverButtonClick';
 export const GAME_OVER_EVENT = 'gameOver';
-export const NEXT_TETROMINO_UPDATED_EVENT = 'nextTetrominoUpdated';
 export const HEURISTIC_TEXT_UPDATED_EVENT = 'heuristicTextUpdated';
 export const DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT = 'debugGraphicsTetrominoCenter';
 

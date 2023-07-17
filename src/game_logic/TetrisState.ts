@@ -1,6 +1,6 @@
 import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
-import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, NEXT_TETROMINO_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
+import { GAME_OVER_EVENT, HEURISTIC_TEXT_UPDATED_EVENT, ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { Coord, DropPosition } from "../types";
@@ -11,7 +11,7 @@ export default class TetrisState {
   public blocks: Block[] = [];
   public tetromino: Tetromino | null = null;
   private gameOver: boolean = false;
-  private tetrominoGenerator: TetrominoGenerator;
+  public tetrominoGenerator: TetrominoGenerator;
 
   private isSandbox: boolean = false;
 
@@ -24,7 +24,6 @@ export default class TetrisState {
    */
   constructor(
     private scene: TetrisScene,
-    isCopy: boolean = false,
   ) {
     this.tetrominoGenerator = new TetrominoGenerator();
     this.tetromino = this.tetrominoGenerator.create();
@@ -45,11 +44,6 @@ export default class TetrisState {
     if (!this.tetromino) {  // TODO null, undefined ?
       this.tetromino = this.tetrominoGenerator.create();
 
-      !this.isSandbox && this.scene.events.emit(
-        NEXT_TETROMINO_UPDATED_EVENT,
-        this.tetrominoGenerator.next(),
-      );
-
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
@@ -58,12 +52,12 @@ export default class TetrisState {
       }
     }
 
-    // if (!this.isSandbox) {
-    //   const move = this.bestMove();
-    //   // console.log(move);
-    //   this.tetromino.forceDropPosition(move);
-    //   console.log(this.scene.children.getAll())
-    // }
+    if (!this.isSandbox) {
+      const move = this.bestMove();
+      // console.log(move);
+      this.tetromino.forceDropPosition(move);
+      console.log(this.scene.children.getAll())
+    }
   }
 
 
@@ -373,7 +367,7 @@ export default class TetrisState {
   }
 
   private copy(): TetrisState {
-    const tetrisState = new TetrisState(this.scene, true);
+    const tetrisState = new TetrisState(this.scene);
     tetrisState.blocks = [...this.blocks];
     // tetrisState.tetromino.destroy();
     tetrisState.tetromino = this.tetromino.copy();

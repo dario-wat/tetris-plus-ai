@@ -1,6 +1,5 @@
 import { shuffle } from "lodash";
 import { I, J, L, O, S, T, Tetromino, Z } from "../game_objects/Tetromino";
-import { TetrisScene } from "../scene";
 import { TetrominoEnum } from "../lib/tetromino_enum";
 
 // TODO random generation is really weird

@@ -1,4 +1,4 @@
-import { NEXT_TETROMINO_UPDATED_EVENT, NEXT_TETROMINO_X, NEXT_TETROMINO_Y, SCALE } from "../lib/consts";
+import { NEXT_TETROMINO_X, NEXT_TETROMINO_Y, SCALE } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import { I_TEXTURE, J_TEXTURE, L_TEXTURE, O_TEXTURE, S_TEXTURE, T_TEXTURE, Z_TEXTURE } from '../lib/textures';
 import { TetrominoEnum } from "../lib/tetromino_enum";
@@ -28,18 +28,12 @@ export default class NextTetromino extends Phaser.GameObjects.Sprite {
     nextText.setOrigin(0.5);
 
     this.setScale(SCALE);
+  }
 
-    this.scene.events.on(
-      NEXT_TETROMINO_UPDATED_EVENT,
-      (nextTetromino: TetrominoEnum) => {
-        const next = this.getNextTetrominoTexture(nextTetromino);
-        this.setRotation(0);
-        if (next === I_TEXTURE) {
-          this.setRotation(Math.PI / 2);
-        }
-        this.setTexture(next);
-      }
-    );
+  public setNext(nextTetromino: TetrominoEnum): void {
+    const next = this.getNextTetrominoTexture(nextTetromino);
+    this.setRotation(0);
+    this.setTexture(next);
   }
 
   private getNextTetrominoTexture(nextIndex: TetrominoEnum): string {

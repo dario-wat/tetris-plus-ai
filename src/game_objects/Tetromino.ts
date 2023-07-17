@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import { TetrisScene } from '../scene';
 import { BLUE, GREEN, I_TEXTURE, J_TEXTURE, LIGHT_BLUE, L_TEXTURE, ORANGE, O_TEXTURE, PURPLE, RED, S_TEXTURE, T_TEXTURE, YELLOW, Z_TEXTURE } from '../lib/textures';
-import { DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT, SCALE, TETRIS_WIDTH } from '../lib/consts';
+import { SCALE, TETRIS_WIDTH } from '../lib/consts';
 import { cx, cy } from '../lib/grid';
 import { Coord, DropPosition } from '../types';
 import { range, zip } from 'lodash';
@@ -33,13 +33,7 @@ export abstract class Tetromino {
     public xCoord: number,
     public yCoord: number,
   ) {
-    // super(scene, 0, 0, texture);
-    // scene.add.existing(this);
-
-    // this.setVisible(false);
-
-    // this.setScale(SCALE);
-
+    // TODO
     // this.scene.events.on('update', () => {
     //   this.scene &&
     //     this.scene.events.emit(

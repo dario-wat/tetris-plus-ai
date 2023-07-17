@@ -31,6 +31,8 @@ export class TetrisScene extends Phaser.Scene {
   private blocks: BlockSprite[] = [];
   private tetromino: TetrominoSprite = undefined;
 
+  private nextTetromino: NextTetromino;
+
   constructor() {
     super({ key: 'TetrisScene' })
   }
@@ -45,7 +47,6 @@ export class TetrisScene extends Phaser.Scene {
     this.tetrisState = new TetrisState(this);
 
     new TetrisArena(this);
-    new NextTetromino(this);
     new GameOverButton(this);
     new Text(
       this,
@@ -59,6 +60,10 @@ export class TetrisScene extends Phaser.Scene {
       HEURISTIC_TEXT_UPDATED_EVENT,
     );
     DEBUG_GRAPHICS_ENABLED && new DebugGraphics(this);
+
+
+    this.nextTetromino = new NextTetromino(this);
+
 
     this.keys.w.on('down', () => {
       this.tetrisState.tetrominoRotate();
@@ -113,5 +118,8 @@ export class TetrisScene extends Phaser.Scene {
         this.tetrisState.tetromino.texture,
       );
     }
+
+    // TODO extract
+    this.nextTetromino.setNext(this.tetrisState.tetrominoGenerator.next());
   }
 }
