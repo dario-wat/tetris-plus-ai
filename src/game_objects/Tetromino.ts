@@ -41,28 +41,12 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
     this.setScale(SCALE);
 
     this.scene.events.on('update', () => {
-      this.updatePosition();
-
       this.scene &&
         this.scene.events.emit(
           DEBUG_GRAPHICS_TETROMINO_CENTER_EVENT,
           this.getCenterPoint(),
         );
     });
-  }
-
-  /**
-   * Updates the position of the tetromino based on the coordinates and the
-   * rotation. This is called inside each tetromino constructor even
-   * though it probably shouldn't.
-   */
-  protected updatePosition(): void {
-    const tetrWidth = this.rotations[this.currRotation][0];
-    const tetrHeight = this.rotations[this.currRotation][1];
-    this.setPosition(
-      cx(this.xCoord, tetrWidth),
-      cy(this.yCoord, tetrHeight),
-    );
   }
 
   public getTetrWidth(): number {
@@ -95,46 +79,16 @@ export abstract class Tetromino extends Phaser.GameObjects.Sprite {
   }
 
   /** 
-   * Updates this.currRotation by unlocking it first, updating and then
-   * locking it again.
-   */
-  private updateCurrRotation(newCurrRotation: number): void {
-    const rotationDx = newCurrRotation > this.currRotation
-      ? newCurrRotation - this.currRotation
-      : - (this.currRotation - newCurrRotation);
-    this.currRotation = newCurrRotation;
-  }
-
-  /** 
    * Forces a tetromino into a specific position (and rotation).
    * This is used for AI.
    */
   public forceDropPosition(dropPosition: DropPosition): void {
-    this.updateCurrRotation(dropPosition.rotation);
+    this.currRotation = dropPosition.rotation;
     this.xCoord = dropPosition.coord[0];
     this.yCoord = dropPosition.coord[1];
   }
 
-  /**
-   * Tetrominoes are not properly centered by default. This will translate
-   * the tetromino so that it's centered. NOTE: tetrominoes need to be
-   * uncentered before any other rotations.
-   */
-  private lockToCenter(): void {
-    this.xCoord -= this.rotationCenterOffset[this.currRotation][0];
-    this.yCoord -= this.rotationCenterOffset[this.currRotation][1];
-  }
-
-  /**
-   * It will reset the tetromino into its default position where coordinates
-   * are set to the top left corner instead of the center. This needs to be
-   * called before a new rotation is done.
-   */
-  private unlockFromCenter(): void {
-    this.xCoord += this.rotationCenterOffset[this.currRotation][0];
-    this.yCoord += this.rotationCenterOffset[this.currRotation][1];
-  }
-
+  // TODO is this still useful?
   /** 
    * This is used only for debugging. It is the same as unlock because all
    * tetrominoes are locked to center by default.
@@ -192,7 +146,6 @@ export class I extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, I_TEXTURE, 4, 0);
-    this.updatePosition();
     this.rotateRight();
   }
 
@@ -216,7 +169,6 @@ export class J extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, J_TEXTURE, 3, 0);
-    this.updatePosition();
   }
 
   protected create(scene: TetrisScene): Tetromino {
@@ -239,7 +191,6 @@ export class L extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, L_TEXTURE, 3, 0);
-    this.updatePosition();
   }
 
   protected create(scene: TetrisScene): Tetromino {
@@ -279,7 +230,6 @@ export class S extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, S_TEXTURE, 3, 0);
-    this.updatePosition();
   }
 
   protected create(scene: TetrisScene): Tetromino {
@@ -302,7 +252,6 @@ export class T extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, T_TEXTURE, 3, 0);
-    this.updatePosition();
   }
 
   protected create(scene: TetrisScene): Tetromino {
@@ -323,7 +272,6 @@ export class Z extends Tetromino {
 
   constructor(scene: TetrisScene) {
     super(scene, Z_TEXTURE, 3, 0);
-    this.updatePosition();
   }
 
   protected create(scene: TetrisScene): Tetromino {
