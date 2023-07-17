@@ -19,6 +19,7 @@ import TetrominoSprite from './ui/TetrominoSprite';
 // TODO memory leak in best move
 // TODO maybe use events for blocks
 // TODO drop position should have only column and rotation
+// TODO use only x y objects instead of tuples
 
 const DELAY_MS = 400;
 
@@ -47,12 +48,12 @@ export class TetrisScene extends Phaser.Scene {
   create(): void {
     this.keys = new KeyboardInput(this);
 
-    this.tetrisState = new TetrisState(this);
+    this.tetrisState = new TetrisState();
 
     new TetrisArena(this);
 
 
-    this.gameOverButton = new GameOverButton(this);
+    this.gameOverButton = new GameOverButton(this, () => this.tetrisState.reset());
 
 
     this.debugText = new Text(
@@ -122,8 +123,8 @@ export class TetrisScene extends Phaser.Scene {
         this,
         this.tetrisState.tetromino.xCoord,
         this.tetrisState.tetromino.yCoord,
-        this.tetrisState.tetromino.getTetrWidth(),
-        this.tetrisState.tetromino.getTetrHeight(),
+        this.tetrisState.tetromino.getWidth(),
+        this.tetrisState.tetromino.getHeight(),
         this.tetrisState.tetromino.currRotation,
         this.tetrisState.tetromino.texture,
       );

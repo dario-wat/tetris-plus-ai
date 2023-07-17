@@ -31,16 +31,16 @@ export abstract class Tetromino {
 
   // TODO all public, and not readonly ?
   protected constructor(
-    public texture: string,
     public xCoord: number,
     public yCoord: number,
+    public readonly texture: string,
   ) { }
 
-  public getTetrWidth(): number {
+  public getWidth(): number {
     return this.rotations[this.currRotation][0];
   }
 
-  public getTetrHeight(): number {
+  public getHeight(): number {
     return this.rotations[this.currRotation][1];
   }
 
@@ -132,7 +132,7 @@ export class I extends Tetromino {
   public readonly blockTexture: string = LIGHT_BLUE;
 
   constructor() {
-    super(I_TEXTURE, 4, 0);
+    super(4, 0, I_TEXTURE);
     this.rotateRight();
   }
 
@@ -155,7 +155,7 @@ export class J extends Tetromino {
   public readonly blockTexture: string = BLUE;
 
   constructor() {
-    super(J_TEXTURE, 3, 0);
+    super(3, 0, J_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -177,7 +177,7 @@ export class L extends Tetromino {
   public readonly blockTexture: string = ORANGE;
 
   constructor() {
-    super(L_TEXTURE, 3, 0);
+    super(3, 0, L_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -196,7 +196,7 @@ export class O extends Tetromino {
   public readonly blockTexture: string = YELLOW;
 
   constructor() {
-    super(O_TEXTURE, 4, 0);
+    super(4, 0, O_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -216,7 +216,7 @@ export class S extends Tetromino {
   public readonly blockTexture: string = GREEN;
 
   constructor() {
-    super(S_TEXTURE, 3, 0);
+    super(3, 0, S_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -238,7 +238,7 @@ export class T extends Tetromino {
   public readonly blockTexture: string = PURPLE;
 
   constructor() {
-    super(T_TEXTURE, 3, 0);
+    super(3, 0, T_TEXTURE);
   }
 
   protected create(): Tetromino {
@@ -258,7 +258,7 @@ export class Z extends Tetromino {
   public readonly blockTexture: string = RED;
 
   constructor() {
-    super(Z_TEXTURE, 3, 0);
+    super(3, 0, Z_TEXTURE);
   }
 
   protected create(): Tetromino {

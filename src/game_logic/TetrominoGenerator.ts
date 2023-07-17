@@ -46,10 +46,6 @@ export default class TetrominoGenerator {
     return this.queue[0];
   }
 
-  public reset(): void {
-    this.queue = [];
-  }
-
   public copy(): TetrominoGenerator {
     const tetrominoGenerator = new TetrominoGenerator();
     tetrominoGenerator.queue = [...this.queue];

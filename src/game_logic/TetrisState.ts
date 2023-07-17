@@ -1,7 +1,6 @@
 import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
-import { ON_GAME_OVER_BUTTON_CLICK_EVENT, TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
-import { TetrisScene } from "../scene";
+import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import TetrominoGenerator from "./TetrominoGenerator";
 import { Coord, DropPosition } from "../types";
 import Block from "../game_objects/Block";
@@ -17,26 +16,13 @@ export default class TetrisState {
 
   // TODO this comment doesn't make sense
   /**
-   * Initialized tetris state in the scene.
+   * Initialized tetris state.
    * 1. Create a new tetromino queue (generator)
    * 2. Creates the first tetromino
-   * 3. Initializes the game over state
-   * 4. Creates the heuristic debug text
    */
-  constructor(
-    private scene: TetrisScene,
-  ) {
+  constructor() {
     this.tetrominoGenerator = new TetrominoGenerator();
     this.tetromino = this.tetrominoGenerator.create();
-
-    // TODO
-    // if (!isCopy) {
-    //   this.scene.events.on(ON_GAME_OVER_BUTTON_CLICK_EVENT, () => this.reset());
-    //   this.scene.events.on('update', () => {
-    //     this.isSandbox && this.makeInvisible();
-    //     this.emitHeuristicTextUpdated();
-    //   });
-    // }
   }
 
   // This is not ideal since it's used in many places and ideally it should
@@ -79,9 +65,9 @@ export default class TetrisState {
     this.createNewTetromino();
   }
 
-  private reset(): void {
+  public reset(): void {
     this.blocks = [];
-    this.tetrominoGenerator.reset();
+    this.tetrominoGenerator = new TetrominoGenerator();
 
     this.tetromino = null
     this.createNewTetromino();
@@ -347,15 +333,15 @@ export default class TetrisState {
       + '\nHole count: ' + this.holeCount()
   }
 
-  /** Turn this state into sandbox mode. Nothing is visible in the scene. */
+  // TODO maybe not needed?
+  /** Turn this state into sandbox mode. */
   private sandbox(): void {
     this.isSandbox = true;
   }
 
   private copy(): TetrisState {
-    const tetrisState = new TetrisState(this.scene);
+    const tetrisState = new TetrisState();
     tetrisState.blocks = [...this.blocks];
-    // tetrisState.tetromino.destroy();
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
@@ -364,12 +350,9 @@ export default class TetrisState {
   }
 
   private destroy(): void {
-    // this.tetromino.destroy();
     this.tetromino = null;
-    this.tetromino = undefined;
     this.blocks = undefined;
     this.tetrominoGenerator = undefined;
-    this.scene = undefined;
   }
 
   /** What is the best next position to drop this tetromino. */
