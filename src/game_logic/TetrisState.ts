@@ -1,8 +1,7 @@
-import { flatten, groupBy, min, minBy, sum, uniq } from "lodash";
+import { flatten, groupBy, min, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
 import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import TetrominoGenerator from "./TetrominoGenerator";
-import { Coord, DropPosition } from "../types";
 import Block from "../game_objects/Block";
 
 export default class TetrisState {
@@ -128,7 +127,6 @@ export default class TetrisState {
 
     this.destructureTetromino();
     this.tetromino = null;
-    // this.tetromino.destroy();
     return false;
   }
 
@@ -283,12 +281,12 @@ export default class TetrisState {
   }
 
   /** Heuristic: sum of heights of all columns. */
-  private heightsSum(): number {
+  public heightsSum(): number {
     return sum(this.heights());
   }
 
   /** Heuristic: sum of differences of heights between adjacent columns. */
-  private heightsDifferenceSum(): number {
+  public heightsDifferenceSum(): number {
     const heights = this.heights();
     return sum(
       heights.slice(1).map((height, i) => Math.abs(height - heights[i]))
@@ -300,22 +298,11 @@ export default class TetrisState {
    * grid cell without a tetris block that has a tetris block anywhere
    * above it in the stack.
    */
-  private holeCount(): number {
+  public holeCount(): number {
     const holesPerColumn = this.columns().map(column =>
       TETRIS_HEIGHT - min(column.map(block => block.yCoord)) - column.length
     );
     return sum(holesPerColumn);
-  }
-
-  /** Heuristic score for the current state. */
-  private heuristic(
-    heightsSumFactor: number,
-    heightsDifferenceSumFactor: number,
-    holeCountFactor: number,
-  ): number {
-    return heightsSumFactor * this.heightsSum()
-      + heightsDifferenceSumFactor + this.heightsDifferenceSum()
-      + holeCountFactor * this.holeCount();
   }
 
   /** Used for the heuristic debug text */
@@ -325,25 +312,12 @@ export default class TetrisState {
       + '\nHole count: ' + this.holeCount()
   }
 
-  private copy(): TetrisState {
+  public copy(): TetrisState {
     const tetrisState = new TetrisState();
     tetrisState.blocks = this.blocks.map(block => block.copy());
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
     return tetrisState;
-  }
-
-  /** What is the best next position to drop this tetromino. */
-  public bestMove(): DropPosition {
-    const heuristicScores = this.tetromino.enumerateDropPositions()
-      .map(dropPosition => {
-        const tetrisState = this.copy();
-        tetrisState.tetromino.forceDropPosition(dropPosition);
-        tetrisState.tetrominoTotalDrop();
-        const hScore = tetrisState.heuristic(1, 0, 10);
-        return [dropPosition, hScore] as const;
-      });
-    return minBy(heuristicScores, h => h[1])[0];
   }
 }

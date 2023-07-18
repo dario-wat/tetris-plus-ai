@@ -10,13 +10,15 @@ import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
 import BlockSprite from './ui/BlockSprite';
 import TetrominoSprite from './ui/TetrominoSprite';
+import AI from './game_logic/AI';
 
-// TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
-// TODO use only x y objects instead of tuples
+// TODO make moves manually with AI
+// TODO make factor drags
 
-const DELAY_MS = 400;
+
+const DELAY_MS = 100;
 
 export class TetrisScene extends Phaser.Scene {
 
@@ -26,6 +28,8 @@ export class TetrisScene extends Phaser.Scene {
 
   private blocks: BlockSprite[] = [];
   private tetromino: TetrominoSprite = undefined;
+
+  private ai: AI;
 
   private nextTetromino: NextTetromino;
   private debugText: Text;
@@ -44,6 +48,8 @@ export class TetrisScene extends Phaser.Scene {
     this.keys = new KeyboardInput(this);
 
     this.tetrisState = new TetrisState();
+
+    this.ai = new AI(this.tetrisState);
 
     new TetrisArena(this);
 
@@ -99,9 +105,9 @@ export class TetrisScene extends Phaser.Scene {
     // this.tetrisState.makeStep();
 
 
-    const move = this.tetrisState.bestMove();
+    const move = this.ai.bestMove();
     this.tetrisState.tetromino.forceDropPosition(move);
-    // this.tetrisState.tetrominoTotalDrop();
+    this.tetrisState.tetrominoTotalDrop();
 
   }
 
