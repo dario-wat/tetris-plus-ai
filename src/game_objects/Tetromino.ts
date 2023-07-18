@@ -66,8 +66,8 @@ export abstract class Tetromino {
    */
   public forceDropPosition(dropPosition: DropPosition): void {
     this.currRotation = dropPosition.rotation;
-    this.xCoord = dropPosition.coord[0];
-    this.yCoord = dropPosition.coord[1];
+    this.xCoord = dropPosition.xCoord;
+    this.yCoord = 0;
   }
 
   /** Gets the center block coordinates of the tetromino. */
@@ -97,8 +97,7 @@ export abstract class Tetromino {
     return this.rotations.flatMap((rotationSize, i) => {
       const width = rotationSize[0];
       const xCoords = range(TETRIS_WIDTH - width + 1);
-      const yCoords: number[] = Array(xCoords.length).fill(0);
-      return zip(xCoords, yCoords).map(coord => ({ coord, rotation: i }));
+      return xCoords.map(xCoord => ({ xCoord, rotation: i }));
     });
   }
 

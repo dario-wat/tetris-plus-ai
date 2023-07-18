@@ -14,7 +14,6 @@ import TetrominoSprite from './ui/TetrominoSprite';
 // TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
-// TODO drop position should have only column and rotation
 // TODO use only x y objects instead of tuples
 
 const DELAY_MS = 400;
@@ -97,11 +96,11 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   makeStep(): void {
-    this.tetrisState.makeStep();
+    // this.tetrisState.makeStep();
 
 
-    // const move = this.tetrisState.bestMove();
-    // this.tetrisState.tetromino.forceDropPosition(move);
+    const move = this.tetrisState.bestMove();
+    this.tetrisState.tetromino.forceDropPosition(move);
     // this.tetrisState.tetrominoTotalDrop();
 
   }
