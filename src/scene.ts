@@ -14,10 +14,6 @@ import TetrominoSprite from './ui/TetrominoSprite';
 // TODO make ai solver
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
-// TODO remove scene from non objects
-// TODO IMPORTANT separate logic classes from rendering classes (tetromino and blocks)
-// TODO memory leak in best move
-// TODO maybe use events for blocks
 // TODO drop position should have only column and rotation
 // TODO use only x y objects instead of tuples
 
@@ -94,7 +90,7 @@ export class TetrisScene extends Phaser.Scene {
 
     this.time.addEvent({
       delay: DELAY_MS,
-      callback: this.makeStep,
+      callback: () => this.makeStep(),
       callbackScope: this,
       loop: true,
     });
@@ -102,6 +98,12 @@ export class TetrisScene extends Phaser.Scene {
 
   makeStep(): void {
     this.tetrisState.makeStep();
+
+
+    // const move = this.tetrisState.bestMove();
+    // this.tetrisState.tetromino.forceDropPosition(move);
+    // this.tetrisState.tetrominoTotalDrop();
+
   }
 
   update(): void {

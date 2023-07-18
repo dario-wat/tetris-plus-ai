@@ -12,9 +12,6 @@ export default class TetrisState {
   public gameOver: boolean = false;
   public tetrominoGenerator: TetrominoGenerator;
 
-  private isSandbox: boolean = false;
-
-  // TODO this comment doesn't make sense
   /**
    * Initialized tetris state.
    * 1. Create a new tetromino queue (generator)
@@ -28,19 +25,13 @@ export default class TetrisState {
   // This is not ideal since it's used in many places and ideally it should
   // be used in only one place. But it works
   private createNewTetromino(): void {
-    if (!this.tetromino) {  // TODO null, undefined ?
+    if (this.tetromino === null) {
       this.tetromino = this.tetrominoGenerator.create();
 
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
       }
-    }
-
-    if (!this.isSandbox) {    // TODO remove issandbox
-      const move = this.bestMove();
-      // console.log(move);
-      this.tetromino.forceDropPosition(move);
     }
   }
 
@@ -145,6 +136,7 @@ export default class TetrisState {
   public tetrominoTotalDrop(): void {
     if (!this.gameOver && this.tetromino) {
       while (this.tetrominoDrop()) { }
+      this.crush();
       this.createNewTetromino();
     }
   }
@@ -333,41 +325,23 @@ export default class TetrisState {
       + '\nHole count: ' + this.holeCount()
   }
 
-  // TODO maybe not needed?
-  /** Turn this state into sandbox mode. */
-  private sandbox(): void {
-    this.isSandbox = true;
-  }
-
-  // TODO this might be expensive, is there a cheaper copy
   private copy(): TetrisState {
     const tetrisState = new TetrisState();
-
-    // TODO this blocks part might be expensive
     tetrisState.blocks = this.blocks.map(block => block.copy());
     tetrisState.tetromino = this.tetromino.copy();
     tetrisState.gameOver = this.gameOver;
     tetrisState.tetrominoGenerator = this.tetrominoGenerator.copy();
-    tetrisState.sandbox();
     return tetrisState;
   }
 
-  private destroy(): void {
-    this.tetromino = null;
-    this.blocks = undefined;
-    this.tetrominoGenerator = undefined;
-  }
-
   /** What is the best next position to drop this tetromino. */
-  private bestMove(): DropPosition {
+  public bestMove(): DropPosition {
     const heuristicScores = this.tetromino.enumerateDropPositions()
       .map(dropPosition => {
         const tetrisState = this.copy();
-        tetrisState.sandbox();
         tetrisState.tetromino.forceDropPosition(dropPosition);
         tetrisState.tetrominoTotalDrop();
         const hScore = tetrisState.heuristic(1, 0, 10);
-        tetrisState.destroy();
         return [dropPosition, hScore] as const;
       });
     return minBy(heuristicScores, h => h[1])[0];
