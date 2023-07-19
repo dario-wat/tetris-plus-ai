@@ -1,4 +1,4 @@
-import { flatten, groupBy, min, sum, uniq } from "lodash";
+import { flatten, groupBy, max, min, sum, uniq } from "lodash";
 import { Tetromino } from "../game_objects/Tetromino";
 import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import TetrominoGenerator from "./TetrominoGenerator";
@@ -305,11 +305,16 @@ export default class TetrisState {
     return sum(holesPerColumn);
   }
 
+  public maxHeight(): number {
+    return TETRIS_HEIGHT - min(this.blocks.map(block => block.yCoord));
+  }
+
   /** Used for the heuristic debug text */
   public getHeuristicText(): string {
     return 'Height sum: ' + this.heightsSum()
       + '\nHeight diff sum: ' + this.heightsDifferenceSum()
       + '\nHole count: ' + this.holeCount()
+      + '\nMax height: ' + this.maxHeight()
   }
 
   public copy(): TetrisState {

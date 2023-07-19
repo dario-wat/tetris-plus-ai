@@ -16,10 +16,10 @@ import Dragger from './ui/Dragger';
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO make moves manually with AI
-// TODO make factor drags
-// TODO add more heuristics to see how the tetris behaves
 // TODO ai speed
 // TODO switch between AI and human
+// TODO scan depth 2+, dragger for that
+// TODO genetic algo to figure out best params, maybe sum heights at the end
 
 const DELAY_MS = 100;
 
@@ -54,6 +54,7 @@ export class TetrisScene extends Phaser.Scene {
 
     this.ai = new AI(this.tetrisState);
 
+    // TODO extract
     new Dragger(
       this,
       DRAGGABLE_BAR_X,
@@ -88,6 +89,18 @@ export class TetrisScene extends Phaser.Scene {
       (value: number) => this.ai.setHoleCountFactor(value),
       'Hole count factor',
       this.ai.holeCountFactor,
+    );
+
+    new Dragger(
+      this,
+      DRAGGABLE_BAR_X,
+      DRAGGABLE_BAR_Y + 3 * DRAGGABLE_BAR_GAP,
+      DRAGGABLE_LINE_WIDTH,
+      -1,
+      1,
+      (value: number) => this.ai.setMaxHeightFactor(value),
+      'Max height factor',
+      this.ai.maxHeightFactor,
     );
 
     new TetrisArena(this);
