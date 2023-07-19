@@ -4,8 +4,9 @@ import TetrisState from "./TetrisState";
 
 export default class AI {
 
-  public heightsSumFactor: number = 1;
-  public heightsDiffSumFactor: number = 1;
+  // Very good starting set of parameters
+  public heightsSumFactor: number = 0.1;
+  public heightsDiffSumFactor: number = 0.1;
   public holeCountFactor: number = 1;
 
   constructor(private tetrisState: TetrisState) { }
@@ -25,7 +26,7 @@ export default class AI {
   /** Heuristic score for the current state. */
   private heuristic(tetrisState: TetrisState): number {
     return this.heightsSumFactor * tetrisState.heightsSum()
-      + this.heightsDiffSumFactor + tetrisState.heightsDifferenceSum()
+      + this.heightsDiffSumFactor * tetrisState.heightsDifferenceSum()
       + this.holeCountFactor * tetrisState.holeCount();
   }
 

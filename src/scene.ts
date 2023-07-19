@@ -21,7 +21,7 @@ import Dragger from './ui/Dragger';
 // TODO ai speed
 // TODO switch between AI and human
 
-const DELAY_MS = 1000;
+const DELAY_MS = 100;
 
 export class TetrisScene extends Phaser.Scene {
 
