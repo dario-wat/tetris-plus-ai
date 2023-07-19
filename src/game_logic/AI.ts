@@ -4,11 +4,23 @@ import TetrisState from "./TetrisState";
 
 export default class AI {
 
-  private heightsSumFactor: number = 1;
-  private heightsDiffSumFactor: number = 0;
-  private holeCountFactor: number = 10;
+  public heightsSumFactor: number = 1;
+  public heightsDiffSumFactor: number = 1;
+  public holeCountFactor: number = 1;
 
   constructor(private tetrisState: TetrisState) { }
+
+  public setHeightsSumFactor(value: number): void {
+    this.heightsSumFactor = value;
+  }
+
+  public setHeightsDiffSumFactor(value: number): void {
+    this.heightsDiffSumFactor = value;
+  }
+
+  public setHoleCountFactor(value: number): void {
+    this.holeCountFactor = value;
+  }
 
   /** Heuristic score for the current state. */
   private heuristic(tetrisState: TetrisState): number {
@@ -19,6 +31,7 @@ export default class AI {
 
   /** What is the best next position to drop this tetromino. */
   public bestMove(): DropPosition {
+    console.log(this.heightsSumFactor, this.heightsDiffSumFactor, this.holeCountFactor)
     const heuristicScores = this.tetrisState.tetromino.enumerateDropPositions()
       .map(dropPosition => {
         const tetrisState = this.tetrisState.copy();
@@ -27,6 +40,7 @@ export default class AI {
         const hScore = this.heuristic(tetrisState);
         return [dropPosition, hScore] as const;
       });
+    console.log(minBy(heuristicScores, h => h[1])[1]);
     return minBy(heuristicScores, h => h[1])[0];
   }
 }

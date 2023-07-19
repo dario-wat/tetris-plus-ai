@@ -18,9 +18,16 @@ export const DEBUG_TEXT_X = 700;
 export const DEBUG_TEXT_Y = 300;
 export const DEBUG_TEXT_FONT_SIZE = 14;
 
+// Position of the draggable bars
+export const DRAGGABLE_BAR_X = 100;
+export const DRAGGABLE_BAR_Y = 100;
+export const DRAGGABLE_LINE_WIDTH = 200;
+export const DRAGGABLE_BAR_GAP = 120;
+
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;
 export const GAME_OVER_BUTTON_DEPTH = 1;
+export const DRAGGABLE_BAR_DEPTH = 1;
 
 // Config
 export const DEBUG_GRAPHICS_ENABLED = false;

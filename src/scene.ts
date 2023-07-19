@@ -4,21 +4,24 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, DRAGGABLE_LINE_WIDTH } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
 import BlockSprite from './ui/BlockSprite';
 import TetrominoSprite from './ui/TetrominoSprite';
 import AI from './game_logic/AI';
+import Dragger from './ui/Dragger';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
 // TODO make moves manually with AI
 // TODO make factor drags
+// TODO add more heuristics to see how the tetris behaves
+// TODO ai speed
+// TODO switch between AI and human
 
-
-const DELAY_MS = 100;
+const DELAY_MS = 1000;
 
 export class TetrisScene extends Phaser.Scene {
 
@@ -50,6 +53,42 @@ export class TetrisScene extends Phaser.Scene {
     this.tetrisState = new TetrisState();
 
     this.ai = new AI(this.tetrisState);
+
+    new Dragger(
+      this,
+      DRAGGABLE_BAR_X,
+      DRAGGABLE_BAR_Y,
+      DRAGGABLE_LINE_WIDTH,
+      -1,
+      1,
+      (value: number) => this.ai.setHeightsSumFactor(value),
+      'Heights sum factor',
+      this.ai.heightsSumFactor,
+    );
+
+    new Dragger(
+      this,
+      DRAGGABLE_BAR_X,
+      DRAGGABLE_BAR_Y + DRAGGABLE_BAR_GAP,
+      DRAGGABLE_LINE_WIDTH,
+      -1,
+      1,
+      (value: number) => this.ai.setHeightsDiffSumFactor(value),
+      'Heights diff sum factor',
+      this.ai.heightsDiffSumFactor,
+    );
+
+    new Dragger(
+      this,
+      DRAGGABLE_BAR_X,
+      DRAGGABLE_BAR_Y + 2 * DRAGGABLE_BAR_GAP,
+      DRAGGABLE_LINE_WIDTH,
+      -1,
+      1,
+      (value: number) => this.ai.setHoleCountFactor(value),
+      'Hole count factor',
+      this.ai.holeCountFactor,
+    );
 
     new TetrisArena(this);
 
