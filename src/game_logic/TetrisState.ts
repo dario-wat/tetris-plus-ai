@@ -321,7 +321,8 @@ export default class TetrisState {
   }
 
   public maxHeight(): number {
-    return TETRIS_HEIGHT - min(this.blocks.map(block => block.yCoord));
+    const height = min(this.blocks.map(block => block.yCoord)) ?? TETRIS_HEIGHT;
+    return TETRIS_HEIGHT - height;
   }
 
   // TODO move out

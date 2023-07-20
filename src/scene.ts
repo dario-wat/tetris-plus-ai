@@ -14,6 +14,7 @@ import AI from './game_logic/AI';
 import Dragger from './ui/Dragger';
 import Toggle from './ui/Toggle';
 import { addAiControls } from './ui/complex';
+import FrequencyEvent from './lib/FrequencyEvent';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO make moves manually with AI
@@ -22,6 +23,7 @@ import { addAiControls } from './ui/complex';
 // TODO remove reset and replace it with new tetris state
 // TODO add total drop animation (tween)
 // TODO add text with instructions
+// TODO AI.isActive maybe should not be there
 
 const DELAY_MS = 100;
 
@@ -31,11 +33,10 @@ export class TetrisScene extends Phaser.Scene {
 
   private tetrisState: TetrisState;
 
-  private blocks: BlockSprite[] = [];
-  private tetromino: TetrominoSprite = undefined;
-
   private ai: AI;
 
+  private blocks: BlockSprite[] = [];
+  private tetromino: TetrominoSprite = undefined;
   private nextTetromino: NextTetromino;
   private debugText: Text;
   private statsText: Text;
@@ -43,10 +44,10 @@ export class TetrisScene extends Phaser.Scene {
   private debugGraphics: DebugGraphics | null = null;
 
   private tetrisMovesPerSec: number = 1;
-  private tetrisMovesEvent: Phaser.Time.TimerEvent;
+  private tetrisMovesEvent: FrequencyEvent;
 
   private aiMovesPerSec: number = 2;
-  private aiMovesEvent: Phaser.Time.TimerEvent;
+  private aiMovesEvent: FrequencyEvent;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -129,12 +130,7 @@ export class TetrisScene extends Phaser.Scene {
       600,
       1,
       100,
-      (value: number) => this.aiMovesEvent.reset({
-        delay: 1000 / value,
-        callback: () => this.aiMove(),
-        callbackScope: this,
-        loop: true,
-      }),
+      (value: number) => this.aiMovesEvent.setFrequency(value),
       'AI moves per second',
       this.aiMovesPerSec,
     );
@@ -145,30 +141,23 @@ export class TetrisScene extends Phaser.Scene {
       700,
       1,
       20,
-      (value: number) => this.tetrisMovesEvent.reset({
-        delay: 1000 / value,
-        callback: () => this.tetrisStep(),
-        callbackScope: this,
-        loop: true,
-      }),
+      (value: number) => this.tetrisMovesEvent.setFrequency(value),
       'Tetris steps per second',
       this.tetrisMovesPerSec,
     );
 
 
-    this.aiMovesEvent = this.time.addEvent({
-      delay: 1000 / this.aiMovesPerSec,
-      callback: () => this.aiMove(),
-      callbackScope: this,
-      loop: true,
-    });
+    this.aiMovesEvent = new FrequencyEvent(
+      this,
+      this.aiMovesPerSec,
+      () => this.aiMove(),
+    );
 
-    this.tetrisMovesEvent = this.time.addEvent({
-      delay: 1000 / this.tetrisMovesPerSec,
-      callback: () => this.tetrisStep(),
-      callbackScope: this,
-      loop: true,
-    });
+    this.tetrisMovesEvent = new FrequencyEvent(
+      this,
+      this.tetrisMovesPerSec,
+      () => this.tetrisStep(),
+    );
   }
 
   aiMove(): void {
