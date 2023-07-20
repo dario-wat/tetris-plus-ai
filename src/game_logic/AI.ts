@@ -4,6 +4,9 @@ import TetrisState from "./TetrisState";
 
 export default class AI {
 
+  public readonly minValue: number = -1;
+  public readonly maxValue: number = 1;
+
   // Very good starting set of parameters
   public heightsSumFactor: number = 0.1;
   public heightsDiffSumFactor: number = 0.1;

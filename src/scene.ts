@@ -13,6 +13,7 @@ import TetrominoSprite from './ui/TetrominoSprite';
 import AI from './game_logic/AI';
 import Dragger from './ui/Dragger';
 import Toggle from './ui/Toggle';
+import { addAiControls } from './ui/complex';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
@@ -60,54 +61,7 @@ export class TetrisScene extends Phaser.Scene {
 
     this.ai = new AI(this.tetrisState);
 
-    // TODO extract
-    new Dragger(
-      this,
-      DRAGGABLE_BAR_X,
-      DRAGGABLE_BAR_Y,
-      DRAGGABLE_LINE_WIDTH,
-      -1,
-      1,
-      (value: number) => this.ai.setHeightsSumFactor(value),
-      'Heights sum factor',
-      this.ai.heightsSumFactor,
-    );
-
-    new Dragger(
-      this,
-      DRAGGABLE_BAR_X,
-      DRAGGABLE_BAR_Y + DRAGGABLE_BAR_GAP,
-      DRAGGABLE_LINE_WIDTH,
-      -1,
-      1,
-      (value: number) => this.ai.setHeightsDiffSumFactor(value),
-      'Heights diff sum factor',
-      this.ai.heightsDiffSumFactor,
-    );
-
-    new Dragger(
-      this,
-      DRAGGABLE_BAR_X,
-      DRAGGABLE_BAR_Y + 2 * DRAGGABLE_BAR_GAP,
-      DRAGGABLE_LINE_WIDTH,
-      -1,
-      1,
-      (value: number) => this.ai.setHoleCountFactor(value),
-      'Hole count factor',
-      this.ai.holeCountFactor,
-    );
-
-    new Dragger(
-      this,
-      DRAGGABLE_BAR_X,
-      DRAGGABLE_BAR_Y + 3 * DRAGGABLE_BAR_GAP,
-      DRAGGABLE_LINE_WIDTH,
-      -1,
-      1,
-      (value: number) => this.ai.setMaxHeightFactor(value),
-      'Max height factor',
-      this.ai.maxHeightFactor,
-    );
+    addAiControls(this, this.ai);
 
     new TetrisArena(this);
 
@@ -148,6 +102,7 @@ export class TetrisScene extends Phaser.Scene {
     this.keys.space.on('down', () => {
       this.tetrisState.tetrominoTotalDrop();
     });
+
 
     this.time.addEvent({
       delay: DELAY_MS,
