@@ -1,5 +1,5 @@
 import { flatten, groupBy, max, min, sum, uniq } from "lodash";
-import { Tetromino } from "../game_objects/Tetromino";
+import { Move, Tetromino } from "../game_objects/Tetromino";
 import { TETRIS_HEIGHT, TETRIS_WIDTH } from "../lib/consts";
 import TetrominoGenerator from "./TetrominoGenerator";
 import Block from "../game_objects/Block";
@@ -72,10 +72,31 @@ export default class TetrisState {
     this.blocks = [];
     this.tetrominoGenerator = new TetrominoGenerator();
 
+    this.crushedRows = 0;
+    this.tetrominoesCreated = 0;
+
     this.tetromino = null
     this.createNewTetromino();
 
     this.gameOver = false;
+  }
+
+  /** Does a given move. */
+  public doMove(move: Move): void {
+    switch (move) {
+      case Move.LEFT:
+        this.tetrominoMoveLeft();
+        break;
+      case Move.RIGHT:
+        this.tetrominoMoveRight();
+        break;
+      case Move.ROTATE:
+        this.tetrominoRotate();
+        break;
+      case Move.TOTAL_DROP:
+        this.tetrominoTotalDrop();
+        break;
+    }
   }
 
   /** 

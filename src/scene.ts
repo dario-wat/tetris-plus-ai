@@ -15,9 +15,9 @@ import Dragger from './ui/Dragger';
 import Toggle from './ui/Toggle';
 import { addAiControls } from './ui/complex';
 import FrequencyEvent from './lib/FrequencyEvent';
+import { Move } from './game_objects/Tetromino';
 
 // TODO show where the tetromino will drop (ghost tetromino)
-// TODO make moves manually with AI
 // TODO scan depth 2+, dragger for that
 // TODO genetic algo to figure out best params, maybe sum heights at the end
 // TODO remove reset and replace it with new tetris state
@@ -48,6 +48,9 @@ export class TetrisScene extends Phaser.Scene {
 
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: FrequencyEvent;
+
+  // TODO should be a part of AI or something (movement system)
+  private moveQueue: Move[] = [];
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -165,15 +168,21 @@ export class TetrisScene extends Phaser.Scene {
       return;
     }
 
-    const move = this.ai.bestMove();
-    this.tetrisState.tetromino.forceDropPosition(move);
-    this.tetrisState.tetrominoTotalDrop();
+    if (this.moveQueue.length === 0) {
+      const bestPosition = this.ai.bestPosition();
+      this.moveQueue = [
+        ...this.tetrisState.tetromino.movesTo(bestPosition),
+        Move.TOTAL_DROP,
+      ];
+    }
+    this.tetrisState.doMove(this.moveQueue.shift());
+
+    // console.log(this.tetrisState.tetromino.movesTo(move));
+    // this.tetrisState.tetromino.forceDropPosition(move);
+    // this.tetrisState.tetrominoTotalDrop();
   }
 
   tetrisStep(): void {
-    if (this.ai.isActive) {
-      return;
-    }
     this.tetrisState.makeStep();
   }
 

@@ -1,6 +1,7 @@
 import { minBy } from "lodash";
 import { DropPosition } from "../types";
 import TetrisState from "./TetrisState";
+import { Move } from "../game_objects/Tetromino";
 
 export default class AI {
 
@@ -13,6 +14,7 @@ export default class AI {
   public holeCountFactor: number = 1;
   public maxHeightFactor: number = 0;
 
+  // TODO should this be here ?
   public isActive: boolean = false;
 
   constructor(private tetrisState: TetrisState) { }
@@ -46,7 +48,7 @@ export default class AI {
   }
 
   /** What is the best next position to drop this tetromino. */
-  public bestMove(): DropPosition {
+  public bestPosition(): DropPosition {
     const heuristicScores = this.tetrisState.tetromino.enumerateDropPositions()
       .map(dropPosition => {
         const tetrisState = this.tetrisState.copy();

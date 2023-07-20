@@ -1,9 +1,16 @@
 import * as Textures from '../lib/textures';
 import { TETRIS_WIDTH } from '../lib/consts';
 import { Coord, DropPosition } from '../types';
-import { range, zip } from 'lodash';
+import { max, range, zip } from 'lodash';
 
 type RotationSize = [number, number]
+
+export enum Move {
+  LEFT,
+  RIGHT,
+  ROTATE,
+  TOTAL_DROP,
+}
 
 /**
  * Abstract class for a tetromino containing most of the movement logic.
@@ -99,6 +106,24 @@ export abstract class Tetromino {
       const xCoords = range(TETRIS_WIDTH - width + 1);
       return xCoords.map(xCoord => ({ xCoord, rotation: i }));
     });
+  }
+
+  /** 
+   * Finds a list of moves needed to move the tetromino from the current
+   * position into the drop position. This includes both lateral translation
+   * and rotation.
+   */
+  public movesTo(dropPosition: DropPosition): Move[] {
+    const rotationCount =
+      (dropPosition.rotation + this.rotations.length - this.currRotation)
+      % this.rotations.length;
+    const leftMoveCount = max([this.xCoord - dropPosition.xCoord, 0]);
+    const rightMoveCount = max([dropPosition.xCoord - this.xCoord, 0]);
+    return [
+      ...Array(rotationCount).fill(Move.ROTATE),
+      ...Array(leftMoveCount).fill(Move.LEFT),
+      ...Array(rightMoveCount).fill(Move.RIGHT),
+    ];
   }
 
   public copy(): Tetromino {
