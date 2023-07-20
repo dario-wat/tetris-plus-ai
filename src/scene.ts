@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y, LOOKAHEAD_TOGGLE_X, LOOKAHEAD_TOGGLE_Y, SPEED_SLIDER_X, SPEED_SLIDER_Y, SPEED_SLIDER_GAP } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y, LOOKAHEAD_TOGGLE_X, LOOKAHEAD_TOGGLE_Y, SPEED_SLIDER_X, SPEED_SLIDER_Y, SPEED_SLIDER_GAP, KEYS_TEXT_X, KEYS_TEXT_Y, DEBUG_TEXT_GAP } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
@@ -19,12 +19,7 @@ import { Move } from './game_objects/Tetromino';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO genetic algo to figure out best params, maybe sum heights at the end
-// TODO remove reset and replace it with new tetris state
-// TODO add total drop animation (tween)
-// TODO add text with instructions
-// TODO AI.isActive maybe should not be there
-
-const DELAY_MS = 100;
+// TODO make the code nicer, especially in this file
 
 export class TetrisScene extends Phaser.Scene {
 
@@ -48,6 +43,7 @@ export class TetrisScene extends Phaser.Scene {
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: FrequencyEvent;
 
+  // TODO maybe part of AI
   private lookaheadDepth: number = 1;
 
   // TODO should be a part of AI or something (movement system)
@@ -61,7 +57,12 @@ export class TetrisScene extends Phaser.Scene {
     preloadTextures(this);
   }
 
-  create(): void {
+  private buildUi(): void {
+    new Text(this, KEYS_TEXT_X, KEYS_TEXT_Y)
+      .setText('Keys: a - left, d - right, w - rotate, s - down, space - drop');
+    this.debugText = new Text(this, DEBUG_TEXT_X, DEBUG_TEXT_Y);
+    this.statsText = new Text(this, DEBUG_TEXT_X, DEBUG_TEXT_Y + DEBUG_TEXT_GAP);
+
     new Toggle(
       this,
       AI_TOGGLE_X,
@@ -69,8 +70,7 @@ export class TetrisScene extends Phaser.Scene {
       (value: boolean) => this.ai.setIsActive(value),
       'Activate AI',
     );
-
-    new Toggle(
+    new Toggle(   // TODO maybe should be part of AI
       this,
       LOOKAHEAD_TOGGLE_X,
       LOOKAHEAD_TOGGLE_Y,
@@ -84,36 +84,24 @@ export class TetrisScene extends Phaser.Scene {
       'AI use next tetromino',
     );
 
-    this.keys = new KeyboardInput(this);
-
-    this.tetrisState = new TetrisState();
-
-    this.ai = new AI(this.tetrisState);
-
-    addAiControls(this, this.ai);
-
-    new TetrisArena(this);
-
-    this.gameOverButton = new GameOverButton(this, () => this.tetrisState.reset());
-
-
-    this.debugText = new Text(
-      this,
-      DEBUG_TEXT_X,
-      DEBUG_TEXT_Y,
-    );
-
-    // TODO const for coordinates
-    this.statsText = new Text(this, DEBUG_TEXT_X, DEBUG_TEXT_Y + 100);
-
-
     if (DEBUG_GRAPHICS_ENABLED) {
       this.debugGraphics = new DebugGraphics(this);
     }
 
-
+    new TetrisArena(this);
     this.nextTetromino = new NextTetromino(this);
+  }
 
+  create(): void {
+    this.buildUi();
+
+    this.keys = new KeyboardInput(this);
+
+    this.tetrisState = new TetrisState();
+    this.ai = new AI(this.tetrisState);
+
+    addAiControls(this, this.ai);
+    this.gameOverButton = new GameOverButton(this, () => this.tetrisState.reset());
 
     this.keys.w.on('down', () => {
       if (!this.ai.isActive) {
@@ -141,7 +129,6 @@ export class TetrisScene extends Phaser.Scene {
       }
     });
 
-    // TODO extract and give proper coordinates
     new Dragger(
       this,
       SPEED_SLIDER_X,
@@ -152,7 +139,6 @@ export class TetrisScene extends Phaser.Scene {
       'AI moves per second',
       this.aiMovesPerSec,
     );
-
     new Dragger(
       this,
       SPEED_SLIDER_X,
@@ -170,7 +156,6 @@ export class TetrisScene extends Phaser.Scene {
       this.aiMovesPerSec,
       () => this.aiMove(),
     );
-
     this.tetrisMovesEvent = new FrequencyEvent(
       this,
       this.tetrisMovesPerSec,
@@ -184,18 +169,13 @@ export class TetrisScene extends Phaser.Scene {
     }
 
     if (this.moveQueue.length === 0) {
-      // TODO move lookahead
-      const bestPosition = this.ai.bestPosition(1);
+      const bestPosition = this.ai.bestPosition(this.lookaheadDepth);
       this.moveQueue = [
         ...this.tetrisState.tetromino.movesTo(bestPosition),
         Move.TOTAL_DROP,
       ];
     }
     this.tetrisState.doMove(this.moveQueue.shift());
-
-    // console.log(this.tetrisState.tetromino.movesTo(move));
-    // this.tetrisState.tetromino.forceDropPosition(move);
-    // this.tetrisState.tetrominoTotalDrop();
   }
 
   tetrisStep(): void {
@@ -203,18 +183,12 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   update(): void {
-
-
-    // TODO extract to some system
     this.blocks.forEach(block => block.destroy());
     this.blocks = [];
     this.blocks = this.tetrisState.blocks.map(block =>
       new BlockSprite(this, block.xCoord, block.yCoord, block.texture)
     );
 
-
-
-    // TODO extract
     if (this.tetrisState.tetromino) {
       this.tetromino?.destroy();
       this.tetromino = new TetrominoSprite(
@@ -228,9 +202,7 @@ export class TetrisScene extends Phaser.Scene {
       );
     }
 
-    // TODO extract
     this.nextTetromino.setNext(this.tetrisState.tetrominoGenerator.next());
-
 
     this.debugText.setText(this.tetrisState.getHeuristicText());
     this.statsText.setText(

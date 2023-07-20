@@ -17,6 +17,7 @@ export const NEXT_TETROMINO_Y = 200;
 export const DEBUG_TEXT_X = 750;
 export const DEBUG_TEXT_Y = 300;
 export const DEBUG_TEXT_FONT_SIZE = 14;
+export const DEBUG_TEXT_GAP = 100;
 
 // Position of the draggable bars
 export const DRAGGABLE_BAR_X = 120;
@@ -35,6 +36,10 @@ export const AI_TOGGLE_Y = 100;
 // Lookahead toggle position
 export const LOOKAHEAD_TOGGLE_X = 180;
 export const LOOKAHEAD_TOGGLE_Y = 140;
+
+// Keys text position
+export const KEYS_TEXT_X = 80;
+export const KEYS_TEXT_Y = 650;
 
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;
