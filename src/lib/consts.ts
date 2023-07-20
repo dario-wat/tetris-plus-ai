@@ -20,8 +20,12 @@ export const DEBUG_TEXT_FONT_SIZE = 14;
 
 // Position of the draggable bars
 export const DRAGGABLE_BAR_X = 100;
-export const DRAGGABLE_BAR_Y = 100;
+export const DRAGGABLE_BAR_Y = 150;
 export const DRAGGABLE_BAR_GAP = 80;
+
+// AI toggle position
+export const AI_TOGGLE_X = 150;
+export const AI_TOGGLE_Y = 60;
 
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;

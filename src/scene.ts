@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
@@ -17,11 +17,11 @@ import { addAiControls } from './ui/complex';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO make moves manually with AI
-// TODO switch between AI and human
 // TODO scan depth 2+, dragger for that
 // TODO genetic algo to figure out best params, maybe sum heights at the end
 // TODO remove reset and replace it with new tetris state
 // TODO add total drop animation (tween)
+// TODO add text with instructions
 
 const DELAY_MS = 100;
 
@@ -48,6 +48,8 @@ export class TetrisScene extends Phaser.Scene {
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: Phaser.Time.TimerEvent;
 
+  private isAiActive: boolean = false;
+
   constructor() {
     super({ key: 'TetrisScene' })
   }
@@ -57,7 +59,13 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   create(): void {
-    // new Toggle(this, 100, 600, 'Govno')
+    new Toggle(
+      this,
+      AI_TOGGLE_X,
+      AI_TOGGLE_Y,
+      (value: boolean) => { this.isAiActive = value; },
+      'Activate AI',
+    );
 
     this.keys = new KeyboardInput(this);
 
@@ -91,19 +99,29 @@ export class TetrisScene extends Phaser.Scene {
 
 
     this.keys.w.on('down', () => {
-      this.tetrisState.tetrominoRotate();
+      if (!this.isAiActive) {
+        this.tetrisState.tetrominoRotate();
+      }
     });
     this.keys.d.on('down', () => {
-      this.tetrisState.tetrominoMoveRight();
+      if (!this.isAiActive) {
+        this.tetrisState.tetrominoMoveRight();
+      }
     });
     this.keys.a.on('down', () => {
-      this.tetrisState.tetrominoMoveLeft();
+      if (!this.isAiActive) {
+        this.tetrisState.tetrominoMoveLeft();
+      }
     });
     this.keys.s.on('down', () => {
-      this.tetrisState.tetrominoDrop();
+      if (!this.isAiActive) {
+        this.tetrisState.tetrominoDrop();
+      }
     });
     this.keys.space.on('down', () => {
-      this.tetrisState.tetrominoTotalDrop();
+      if (!this.isAiActive) {
+        this.tetrisState.tetrominoTotalDrop();
+      }
     });
 
     // TODO extract and give proper coordinates
@@ -128,7 +146,7 @@ export class TetrisScene extends Phaser.Scene {
       100,
       700,
       1,
-      100,
+      20,
       (value: number) => this.tetrisMovesEvent.reset({
         delay: 1000 / value,
         callback: () => this.tetrisStep(),
@@ -156,12 +174,19 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   aiMove(): void {
+    if (!this.isAiActive) {
+      return;
+    }
+
     const move = this.ai.bestMove();
     this.tetrisState.tetromino.forceDropPosition(move);
     this.tetrisState.tetrominoTotalDrop();
   }
 
   tetrisStep(): void {
+    if (this.isAiActive) {
+      return;
+    }
     this.tetrisState.makeStep();
   }
 
