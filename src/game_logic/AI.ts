@@ -2,6 +2,12 @@ import { minBy } from "lodash";
 import { DropPosition } from "../types";
 import TetrisState from "./TetrisState";
 import { Move } from "../game_objects/Tetromino";
+import { check } from "../lib/require";
+
+type GraphNode = {
+  tetrisState: TetrisState,
+  dropPositions: DropPosition[],
+};
 
 export default class AI {
 
@@ -48,15 +54,36 @@ export default class AI {
   }
 
   /** What is the best next position to drop this tetromino. */
-  public bestPosition(): DropPosition {
-    const heuristicScores = this.tetrisState.tetromino.enumerateDropPositions()
-      .map(dropPosition => {
-        const tetrisState = this.tetrisState.copy();
-        tetrisState.tetromino.forceDropPosition(dropPosition);
-        tetrisState.tetrominoTotalDrop();
-        const hScore = this.heuristic(tetrisState);
-        return [dropPosition, hScore] as const;
-      });
+  public bestPosition(depth: number = 1): DropPosition {
+    check(depth > 0);
+
+    // Initialize first node
+    let currNodes: GraphNode[] = [{
+      tetrisState: this.tetrisState,
+      dropPositions: [],
+    }];
+
+    // Do BFS to find all states at a certain depth
+    for (let i = 0; i < depth; i++) {
+      const nextNodes: GraphNode[] = currNodes.flatMap(node =>
+        node.tetrisState.tetromino.enumerateDropPositions().map(dropPosition => {
+          const tetrisState = node.tetrisState.copy();
+          tetrisState.tetromino.forceDropPosition(dropPosition);
+          tetrisState.tetrominoTotalDrop();
+          return {
+            tetrisState,
+            dropPositions: [...node.dropPositions, dropPosition],
+          };
+        })
+      );
+      currNodes = nextNodes;
+    }
+
+    // Evaluate heuristic and take only the first drop position of the best state
+    const heuristicScores = currNodes.map(node => {
+      const hScore = this.heuristic(node.tetrisState);
+      return [node.dropPositions[0], hScore] as const;
+    });
     return minBy(heuristicScores, h => h[1])[0];
   }
 }

@@ -169,7 +169,8 @@ export class TetrisScene extends Phaser.Scene {
     }
 
     if (this.moveQueue.length === 0) {
-      const bestPosition = this.ai.bestPosition();
+      // TODO move lookahead
+      const bestPosition = this.ai.bestPosition(1);
       this.moveQueue = [
         ...this.tetrisState.tetromino.movesTo(bestPosition),
         Move.TOTAL_DROP,
