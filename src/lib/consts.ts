@@ -22,7 +22,7 @@ export const DEBUG_TEXT_FONT_SIZE = 14;
 export const DRAGGABLE_BAR_X = 100;
 export const DRAGGABLE_BAR_Y = 100;
 export const DRAGGABLE_LINE_WIDTH = 200;
-export const DRAGGABLE_BAR_GAP = 120;
+export const DRAGGABLE_BAR_GAP = 80;
 
 // Depth for various UI components. Depth is the z component
 export const DEBUG_GRAPHICS_DEPTH = 10;

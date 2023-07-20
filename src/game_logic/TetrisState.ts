@@ -11,6 +11,9 @@ export default class TetrisState {
   public gameOver: boolean = false;
   public tetrominoGenerator: TetrominoGenerator;
 
+  private crushedRows: number = 0;
+  private tetrominoesCreated: number = 0;
+
   /**
    * Initialized tetris state.
    * 1. Create a new tetromino queue (generator)
@@ -19,6 +22,7 @@ export default class TetrisState {
   constructor() {
     this.tetrominoGenerator = new TetrominoGenerator();
     this.tetromino = this.tetrominoGenerator.create();
+    this.tetrominoesCreated = 1;
   }
 
   // This is not ideal since it's used in many places and ideally it should
@@ -26,12 +30,21 @@ export default class TetrisState {
   private createNewTetromino(): void {
     if (this.tetromino === null) {
       this.tetromino = this.tetrominoGenerator.create();
+      this.tetrominoesCreated += 1;
 
       // Game Over logic
       if (this.isTetrominoOverlapping()) {
         this.gameOver = true;
       }
     }
+  }
+
+  public getCrushedRows(): number {
+    return this.crushedRows;
+  }
+
+  public getTetrominoesCreated(): number {
+    return this.tetrominoesCreated;
   }
 
 
@@ -249,6 +262,8 @@ export default class TetrisState {
           block.yCoord += 1;
         });
     }
+
+    this.crushedRows += fullRows.length;
   }
 
   /** Converts a Tetromino into immovable individual blocks. */
@@ -309,6 +324,7 @@ export default class TetrisState {
     return TETRIS_HEIGHT - min(this.blocks.map(block => block.yCoord));
   }
 
+  // TODO move out
   /** Used for the heuristic debug text */
   public getHeuristicText(): string {
     return 'Height sum: ' + this.heightsSum()

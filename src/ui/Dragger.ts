@@ -1,21 +1,22 @@
 import { DRAGGABLE_BAR_DEPTH } from "../lib/consts";
 import { TetrisScene } from "../scene";
 
-const BAR_WIDTH = 20;   // Width of the draggable bar
-const BAR_HEIGHT = 30;  // Height of the draggable bar
+const barWidth = 20;
+const barHeight = 30;
 
-const LINE_HEIGHT = 5;  // Height of the line under the bar
+const lineHeight = 5;
 
-const VALUE_LABEL_OFFSET_Y = 30;
-const VALUE_TEXT_OFFSET_Y = -20;
-const LABEL_OFFSET_X = -80;
+const valueLabelYOff = 30;
+const valueTextYOff = -20;
+const labelXOff = -80;
 
-const FONT = {
+const defaultFont = {
   fontFamily: 'Arial',
   fontSize: '14px',
   color: '#FFFFFF' // White color
 };
 
+/** Or slider, whatever you wanna call it. */
 export default class Dragger {
 
   private draggableGraphics: Phaser.GameObjects.Graphics;
@@ -34,7 +35,7 @@ export default class Dragger {
     private readonly minValue: number,
     private readonly maxValue: number,
     private readonly onChange: (value: number) => void,
-    private readonly label: string = '',
+    readonly label: string = '',
     private readonly startValue: number = 0,
   ) {
     this.value = this.startValue;
@@ -43,51 +44,51 @@ export default class Dragger {
 
     this.draggableGraphics = scene.add.graphics();
     this.draggableGraphics.fillStyle(0x808080);
-    this.draggableGraphics.fillRect(0, 0, BAR_WIDTH, BAR_HEIGHT);
+    this.draggableGraphics.fillRect(0, 0, barWidth, barHeight);
 
     this.draggableContainer.add(this.draggableGraphics);
     this.draggableContainer.setDepth(DRAGGABLE_BAR_DEPTH);
     this.draggableContainer.setInteractive(
-      new Phaser.Geom.Rectangle(0, 0, BAR_WIDTH, BAR_HEIGHT),
+      new Phaser.Geom.Rectangle(0, 0, barWidth, barHeight),
       Phaser.Geom.Rectangle.Contains,
     );
 
-    this.draggableContainer.x = this.valueToPosition(startValue) - BAR_WIDTH / 2;
+    this.draggableContainer.x = this.valueToPosition(startValue) - barWidth / 2;
 
     this.staticGraphics = scene.add.graphics();
     this.staticGraphics.fillStyle(0xffffff);
     this.staticGraphics.fillRect(
       x,
-      y + BAR_HEIGHT / 2 - LINE_HEIGHT / 2,
+      y + barHeight / 2 - lineHeight / 2,
       width,
-      LINE_HEIGHT,
+      lineHeight,
     );
 
     const leftText = scene.add.text(
       x,
-      y + VALUE_LABEL_OFFSET_Y,
+      y + valueLabelYOff,
       minValue.toString(),
-      FONT,
+      defaultFont,
     );
     leftText.x = leftText.x - leftText.width / 2;
 
     const rightText = scene.add.text(
       x + width,
-      y + VALUE_LABEL_OFFSET_Y,
+      y + valueLabelYOff,
       maxValue.toString(),
-      FONT,
+      defaultFont,
     );
     rightText.x = rightText.x - rightText.width / 2;
 
     this.valueText = scene.add.text(
       x + width / 2,
-      y + VALUE_TEXT_OFFSET_Y,
+      y + valueTextYOff,
       startValue.toString(),
-      FONT,
+      defaultFont,
     );
     this.valueText.x = this.valueText.x - this.valueText.width / 2;
 
-    scene.add.text(x + LABEL_OFFSET_X, y + VALUE_TEXT_OFFSET_Y, label, FONT);
+    scene.add.text(x + labelXOff, y + valueTextYOff, label, defaultFont);
 
     scene.input.on('pointerdown', this.startDrag, this);
     scene.input.on('pointerup', this.stopDrag, this);
@@ -124,7 +125,7 @@ export default class Dragger {
       this.valueText.setText(this.value.toFixed(2));
       this.valueText.x = this.x + this.width / 2 - this.valueText.width / 2;
 
-      this.draggableContainer.x = positionX - BAR_WIDTH / 2;
+      this.draggableContainer.x = positionX - barWidth / 2;
     }
   }
 

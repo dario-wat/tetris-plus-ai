@@ -12,6 +12,7 @@ import BlockSprite from './ui/BlockSprite';
 import TetrominoSprite from './ui/TetrominoSprite';
 import AI from './game_logic/AI';
 import Dragger from './ui/Dragger';
+import Toggle from './ui/Toggle';
 
 // TODO show where the tetromino will drop (ghost tetromino)
 // TODO score & speed
@@ -20,6 +21,8 @@ import Dragger from './ui/Dragger';
 // TODO switch between AI and human
 // TODO scan depth 2+, dragger for that
 // TODO genetic algo to figure out best params, maybe sum heights at the end
+// TODO stats for the number of tetrominoes and rows crushed
+// TODO remove reset and replace it with new tetris state
 
 const DELAY_MS = 100;
 
@@ -36,6 +39,7 @@ export class TetrisScene extends Phaser.Scene {
 
   private nextTetromino: NextTetromino;
   private debugText: Text;
+  private statsText: Text;
   private gameOverButton: GameOverButton;
   private debugGraphics: DebugGraphics | null = null;
 
@@ -48,6 +52,8 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   create(): void {
+    // new Toggle(this, 100, 600, 'Govno')
+
     this.keys = new KeyboardInput(this);
 
     this.tetrisState = new TetrisState();
@@ -113,12 +119,10 @@ export class TetrisScene extends Phaser.Scene {
       this,
       DEBUG_TEXT_X,
       DEBUG_TEXT_Y,
-      {
-        fontFamily: 'Arial',
-        fontSize: '14px',
-        color: '#FFFFFF' // White color
-      },
     );
+
+    // TODO const for coordinates
+    this.statsText = new Text(this, DEBUG_TEXT_X, DEBUG_TEXT_Y + 100);
 
 
     if (DEBUG_GRAPHICS_ENABLED) {
@@ -194,6 +198,10 @@ export class TetrisScene extends Phaser.Scene {
 
 
     this.debugText.setText(this.tetrisState.getHeuristicText());
+    this.statsText.setText(
+      'Crushed rows: ' + this.tetrisState.getCrushedRows().toString()
+      + '\nTetrominoes created: ' + this.tetrisState.getTetrominoesCreated().toString()
+    );
 
     this.gameOverButton.setVisible(this.tetrisState.gameOver);
 
