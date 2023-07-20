@@ -48,8 +48,6 @@ export class TetrisScene extends Phaser.Scene {
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: Phaser.Time.TimerEvent;
 
-  private isAiActive: boolean = false;
-
   constructor() {
     super({ key: 'TetrisScene' })
   }
@@ -63,7 +61,7 @@ export class TetrisScene extends Phaser.Scene {
       this,
       AI_TOGGLE_X,
       AI_TOGGLE_Y,
-      (value: boolean) => { this.isAiActive = value; },
+      (value: boolean) => this.ai.setIsActive(value),
       'Activate AI',
     );
 
@@ -99,27 +97,27 @@ export class TetrisScene extends Phaser.Scene {
 
 
     this.keys.w.on('down', () => {
-      if (!this.isAiActive) {
+      if (!this.ai.isActive) {
         this.tetrisState.tetrominoRotate();
       }
     });
     this.keys.d.on('down', () => {
-      if (!this.isAiActive) {
+      if (!this.ai.isActive) {
         this.tetrisState.tetrominoMoveRight();
       }
     });
     this.keys.a.on('down', () => {
-      if (!this.isAiActive) {
+      if (!this.ai.isActive) {
         this.tetrisState.tetrominoMoveLeft();
       }
     });
     this.keys.s.on('down', () => {
-      if (!this.isAiActive) {
+      if (!this.ai.isActive) {
         this.tetrisState.tetrominoDrop();
       }
     });
     this.keys.space.on('down', () => {
-      if (!this.isAiActive) {
+      if (!this.ai.isActive) {
         this.tetrisState.tetrominoTotalDrop();
       }
     });
@@ -174,7 +172,7 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   aiMove(): void {
-    if (!this.isAiActive) {
+    if (!this.ai.isActive) {
       return;
     }
 
@@ -184,7 +182,7 @@ export class TetrisScene extends Phaser.Scene {
   }
 
   tetrisStep(): void {
-    if (this.isAiActive) {
+    if (this.ai.isActive) {
       return;
     }
     this.tetrisState.makeStep();

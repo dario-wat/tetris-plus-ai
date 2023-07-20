@@ -13,7 +13,13 @@ export default class AI {
   public holeCountFactor: number = 1;
   public maxHeightFactor: number = 0;
 
+  public isActive: boolean = false;
+
   constructor(private tetrisState: TetrisState) { }
+
+  public setIsActive(value: boolean): void {
+    this.isActive = value;
+  }
 
   public setHeightsSumFactor(value: number): void {
     this.heightsSumFactor = value;
