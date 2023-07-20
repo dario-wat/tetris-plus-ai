@@ -5,6 +5,7 @@ const barWidth = 20;
 const barHeight = 30;
 
 const lineHeight = 5;
+const lineWidth = 200;
 
 const valueLabelYOff = 30;
 const valueTextYOff = -20;
@@ -31,12 +32,12 @@ export default class Dragger {
     scene: TetrisScene,
     private readonly x: number,
     private readonly y: number,
-    private readonly width: number,
     private readonly minValue: number,
     private readonly maxValue: number,
     private readonly onChange: (value: number) => void,
     readonly label: string = '',
     private readonly startValue: number = 0,
+    private readonly width: number = lineWidth,
   ) {
     this.value = this.startValue;
 

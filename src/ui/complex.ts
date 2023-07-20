@@ -1,5 +1,5 @@
 import AI from "../game_logic/AI";
-import { DRAGGABLE_BAR_GAP, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_LINE_WIDTH } from "../lib/consts";
+import { DRAGGABLE_BAR_GAP, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y } from "../lib/consts";
 import { TetrisScene } from "../scene";
 import Dragger from "./Dragger";
 
@@ -8,7 +8,6 @@ export function addAiControls(scene: TetrisScene, ai: AI): void {
     scene,
     DRAGGABLE_BAR_X,
     DRAGGABLE_BAR_Y,
-    DRAGGABLE_LINE_WIDTH,
     ai.minValue,
     ai.maxValue,
     (value: number) => ai.setHeightsSumFactor(value),
@@ -20,7 +19,6 @@ export function addAiControls(scene: TetrisScene, ai: AI): void {
     scene,
     DRAGGABLE_BAR_X,
     DRAGGABLE_BAR_Y + DRAGGABLE_BAR_GAP,
-    DRAGGABLE_LINE_WIDTH,
     ai.minValue,
     ai.maxValue,
     (value: number) => ai.setHeightsDiffSumFactor(value),
@@ -32,7 +30,6 @@ export function addAiControls(scene: TetrisScene, ai: AI): void {
     scene,
     DRAGGABLE_BAR_X,
     DRAGGABLE_BAR_Y + 2 * DRAGGABLE_BAR_GAP,
-    DRAGGABLE_LINE_WIDTH,
     ai.minValue,
     ai.maxValue,
     (value: number) => ai.setHoleCountFactor(value),
@@ -44,7 +41,6 @@ export function addAiControls(scene: TetrisScene, ai: AI): void {
     scene,
     DRAGGABLE_BAR_X,
     DRAGGABLE_BAR_Y + 3 * DRAGGABLE_BAR_GAP,
-    DRAGGABLE_LINE_WIDTH,
     ai.minValue,
     ai.maxValue,
     (value: number) => ai.setMaxHeightFactor(value),

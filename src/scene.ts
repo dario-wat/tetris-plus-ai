@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, DRAGGABLE_LINE_WIDTH } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
@@ -16,14 +16,12 @@ import Toggle from './ui/Toggle';
 import { addAiControls } from './ui/complex';
 
 // TODO show where the tetromino will drop (ghost tetromino)
-// TODO score & speed
 // TODO make moves manually with AI
-// TODO ai speed
 // TODO switch between AI and human
 // TODO scan depth 2+, dragger for that
 // TODO genetic algo to figure out best params, maybe sum heights at the end
-// TODO stats for the number of tetrominoes and rows crushed
 // TODO remove reset and replace it with new tetris state
+// TODO add total drop animation (tween)
 
 const DELAY_MS = 100;
 
@@ -43,6 +41,12 @@ export class TetrisScene extends Phaser.Scene {
   private statsText: Text;
   private gameOverButton: GameOverButton;
   private debugGraphics: DebugGraphics | null = null;
+
+  private tetrisMovesPerSec: number = 1;
+  private tetrisMovesEvent: Phaser.Time.TimerEvent;
+
+  private aiMovesPerSec: number = 2;
+  private aiMovesEvent: Phaser.Time.TimerEvent;
 
   constructor() {
     super({ key: 'TetrisScene' })
@@ -64,7 +68,6 @@ export class TetrisScene extends Phaser.Scene {
     addAiControls(this, this.ai);
 
     new TetrisArena(this);
-
 
     this.gameOverButton = new GameOverButton(this, () => this.tetrisState.reset());
 
@@ -103,23 +106,63 @@ export class TetrisScene extends Phaser.Scene {
       this.tetrisState.tetrominoTotalDrop();
     });
 
+    // TODO extract and give proper coordinates
+    new Dragger(
+      this,
+      100,
+      600,
+      1,
+      100,
+      (value: number) => this.aiMovesEvent.reset({
+        delay: 1000 / value,
+        callback: () => this.aiMove(),
+        callbackScope: this,
+        loop: true,
+      }),
+      'AI moves per second',
+      this.aiMovesPerSec,
+    );
 
-    this.time.addEvent({
-      delay: DELAY_MS,
-      callback: () => this.makeStep(),
+    new Dragger(
+      this,
+      100,
+      700,
+      1,
+      100,
+      (value: number) => this.tetrisMovesEvent.reset({
+        delay: 1000 / value,
+        callback: () => this.tetrisStep(),
+        callbackScope: this,
+        loop: true,
+      }),
+      'Tetris steps per second',
+      this.tetrisMovesPerSec,
+    );
+
+
+    this.aiMovesEvent = this.time.addEvent({
+      delay: 1000 / this.aiMovesPerSec,
+      callback: () => this.aiMove(),
+      callbackScope: this,
+      loop: true,
+    });
+
+    this.tetrisMovesEvent = this.time.addEvent({
+      delay: 1000 / this.tetrisMovesPerSec,
+      callback: () => this.tetrisStep(),
       callbackScope: this,
       loop: true,
     });
   }
 
-  makeStep(): void {
-    // this.tetrisState.makeStep();
-
-
+  aiMove(): void {
     const move = this.ai.bestMove();
     this.tetrisState.tetromino.forceDropPosition(move);
     this.tetrisState.tetrominoTotalDrop();
+  }
 
+  tetrisStep(): void {
+    this.tetrisState.makeStep();
   }
 
   update(): void {
