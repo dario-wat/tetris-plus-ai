@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y, LOOKAHEAD_TOGGLE_X, LOOKAHEAD_TOGGLE_Y, SPEED_SLIDER_X, SPEED_SLIDER_Y, SPEED_SLIDER_GAP } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
@@ -18,7 +18,6 @@ import FrequencyEvent from './lib/FrequencyEvent';
 import { Move } from './game_objects/Tetromino';
 
 // TODO show where the tetromino will drop (ghost tetromino)
-// TODO scan depth 2+, dragger for that
 // TODO genetic algo to figure out best params, maybe sum heights at the end
 // TODO remove reset and replace it with new tetris state
 // TODO add total drop animation (tween)
@@ -49,6 +48,8 @@ export class TetrisScene extends Phaser.Scene {
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: FrequencyEvent;
 
+  private lookaheadDepth: number = 1;
+
   // TODO should be a part of AI or something (movement system)
   private moveQueue: Move[] = [];
 
@@ -67,6 +68,20 @@ export class TetrisScene extends Phaser.Scene {
       AI_TOGGLE_Y,
       (value: boolean) => this.ai.setIsActive(value),
       'Activate AI',
+    );
+
+    new Toggle(
+      this,
+      LOOKAHEAD_TOGGLE_X,
+      LOOKAHEAD_TOGGLE_Y,
+      (value: boolean) => {
+        if (value) {
+          this.lookaheadDepth = 2;
+        } else {
+          this.lookaheadDepth = 1;
+        }
+      },
+      'AI use next tetromino',
     );
 
     this.keys = new KeyboardInput(this);
@@ -129,8 +144,8 @@ export class TetrisScene extends Phaser.Scene {
     // TODO extract and give proper coordinates
     new Dragger(
       this,
-      100,
-      600,
+      SPEED_SLIDER_X,
+      SPEED_SLIDER_Y,
       1,
       100,
       (value: number) => this.aiMovesEvent.setFrequency(value),
@@ -140,8 +155,8 @@ export class TetrisScene extends Phaser.Scene {
 
     new Dragger(
       this,
-      100,
-      700,
+      SPEED_SLIDER_X,
+      SPEED_SLIDER_Y + SPEED_SLIDER_GAP,
       1,
       20,
       (value: number) => this.tetrisMovesEvent.setFrequency(value),
