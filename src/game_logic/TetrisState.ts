@@ -28,14 +28,12 @@ export default class TetrisState {
   // This is not ideal since it's used in many places and ideally it should
   // be used in only one place. But it works
   private createNewTetromino(): void {
-    if (this.tetromino === null) {
-      this.tetromino = this.tetrominoGenerator.create();
-      this.tetrominoesCreated += 1;
+    this.tetromino = this.tetrominoGenerator.create();
+    this.tetrominoesCreated += 1;
 
-      // Game Over logic
-      if (this.isTetrominoOverlapping()) {
-        this.gameOver = true;
-      }
+    // Game Over logic
+    if (this.isTetrominoOverlapping()) {
+      this.gameOver = true;
     }
   }
 
@@ -64,8 +62,6 @@ export default class TetrisState {
     }
 
     this.tetrominoDrop();
-    this.crush();
-    this.createNewTetromino();
   }
 
   public reset(): void {
@@ -75,7 +71,6 @@ export default class TetrisState {
     this.crushedRows = 0;
     this.tetrominoesCreated = 0;
 
-    this.tetromino = null
     this.createNewTetromino();
 
     this.gameOver = false;
@@ -160,7 +155,8 @@ export default class TetrisState {
     }
 
     this.destructureTetromino();
-    this.tetromino = null;
+    this.crush();
+    this.createNewTetromino();
     return false;
   }
 
@@ -168,8 +164,6 @@ export default class TetrisState {
   public tetrominoTotalDrop(): void {
     if (!this.gameOver && this.tetromino) {
       while (this.tetrominoDrop()) { }
-      this.crush();
-      this.createNewTetromino();
     }
   }
 

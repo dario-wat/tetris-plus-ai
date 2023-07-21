@@ -31,11 +31,15 @@ export const SPEED_SLIDER_GAP = 80;
 
 // AI toggle position
 export const AI_TOGGLE_X = 180;
-export const AI_TOGGLE_Y = 100;
+export const AI_TOGGLE_Y = 80;
 
 // Lookahead toggle position
 export const LOOKAHEAD_TOGGLE_X = 180;
-export const LOOKAHEAD_TOGGLE_Y = 140;
+export const LOOKAHEAD_TOGGLE_Y = 120;
+
+// Instant drop toggle position
+export const INSTANT_DROP_TOGGLE_X = 180;
+export const INSTANT_DROP_TOGGLE_Y = 160;
 
 // Keys text position
 export const KEYS_TEXT_X = 80;

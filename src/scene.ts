@@ -4,7 +4,7 @@ import KeyboardInput from './lib/keyboard_input';
 import { preloadTextures } from './lib/textures';
 import TetrisState from './game_logic/TetrisState';
 import NextTetromino from './ui/NextTetromino';
-import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y, LOOKAHEAD_TOGGLE_X, LOOKAHEAD_TOGGLE_Y, SPEED_SLIDER_X, SPEED_SLIDER_Y, SPEED_SLIDER_GAP, KEYS_TEXT_X, KEYS_TEXT_Y, DEBUG_TEXT_GAP } from './lib/consts';
+import { DEBUG_GRAPHICS_ENABLED, DEBUG_TEXT_X, DEBUG_TEXT_Y, DRAGGABLE_BAR_X, DRAGGABLE_BAR_Y, DRAGGABLE_BAR_GAP, AI_TOGGLE_X, AI_TOGGLE_Y, LOOKAHEAD_TOGGLE_X, LOOKAHEAD_TOGGLE_Y, SPEED_SLIDER_X, SPEED_SLIDER_Y, SPEED_SLIDER_GAP, KEYS_TEXT_X, KEYS_TEXT_Y, DEBUG_TEXT_GAP, INSTANT_DROP_TOGGLE_X, INSTANT_DROP_TOGGLE_Y } from './lib/consts';
 import GameOverButton from './ui/GameOverButton';
 import Text from './ui/Text';
 import DebugGraphics from './ui/DebugGraphics';
@@ -42,6 +42,8 @@ export class TetrisScene extends Phaser.Scene {
 
   private aiMovesPerSec: number = 2;
   private aiMovesEvent: FrequencyEvent;
+
+  private instantDrop: boolean = false;
 
   // TODO maybe part of AI
   private lookaheadDepth: number = 1;
@@ -82,6 +84,13 @@ export class TetrisScene extends Phaser.Scene {
         }
       },
       'AI use next tetromino',
+    );
+    new Toggle(
+      this,
+      INSTANT_DROP_TOGGLE_X,
+      INSTANT_DROP_TOGGLE_Y,
+      (value: boolean) => { this.instantDrop = value; },
+      'AI use instant drop',
     );
 
     if (DEBUG_GRAPHICS_ENABLED) {
@@ -134,7 +143,7 @@ export class TetrisScene extends Phaser.Scene {
       SPEED_SLIDER_X,
       SPEED_SLIDER_Y,
       1,
-      100,
+      1000,
       (value: number) => this.aiMovesEvent.setFrequency(value),
       'AI moves per second',
       this.aiMovesPerSec,
@@ -168,14 +177,26 @@ export class TetrisScene extends Phaser.Scene {
       return;
     }
 
-    if (this.moveQueue.length === 0) {
+
+    if (this.moveQueue.length === 0 && this.tetrisState.tetromino) {
       const bestPosition = this.ai.bestPosition(this.lookaheadDepth);
       this.moveQueue = [
         ...this.tetrisState.tetromino.movesTo(bestPosition),
         Move.TOTAL_DROP,
       ];
     }
-    this.tetrisState.doMove(this.moveQueue.shift());
+
+    // Advanced slowed down AI movement
+    const moveToDo = this.moveQueue.shift();
+    if (moveToDo === Move.TOTAL_DROP && !this.instantDrop) {
+      const dropped = this.tetrisState.tetrominoDrop();
+      if (dropped) {
+        this.moveQueue = [Move.TOTAL_DROP];
+      }
+    } else {
+      // Only this for instant movement
+      this.tetrisState.doMove(moveToDo);
+    }
   }
 
   tetrisStep(): void {
