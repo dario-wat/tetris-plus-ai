@@ -143,7 +143,7 @@ export class TetrisScene extends Phaser.Scene {
       SPEED_SLIDER_X,
       SPEED_SLIDER_Y,
       1,
-      1000,
+      250,
       (value: number) => this.aiMovesEvent.setFrequency(value),
       'AI moves per second',
       this.aiMovesPerSec,
